@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'es' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <script>
+    // Aplicar el estado de colapso guardado ANTES de pintar, para que no
+    // parpadee la sidebar abierta un instante en cada carga de página.
+    try {
+      if (localStorage.getItem('daw-nav-collapsed') === '1') {
+        document.documentElement.classList.add('nav-collapsed');
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="topbar-brand" href="{{ '/' | relative_url }}">
+      <span class="topbar-logo">DW</span>
+      <span class="topbar-title">{{ site.title }}</span>
+    </a>
+    <span class="topbar-meta">2º CFGS DAW</span>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <button id="nav-collapse-toggle" class="icon-btn" type="button" aria-label="Colapsar/expandir menú" title="Colapsar/expandir menú">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <span class="sidebar-title">Índice del curso</span>
+      </div>
+
+      <nav class="tree">
+        <div class="nav-top">
+          {% for top in site.nav_top %}
+            <a href="{{ top.url | relative_url }}" class="node-label nav-top-link{% if top.url == page.url %} active{% endif %}">{{ top.title }}</a>
+          {% endfor %}
+        </div>
+
+        {% assign active_sub_id = "" %}
+        {% assign active_block_id = "" %}
+        {% assign active_unit_id = "" %}
+        {% assign active_course_id = "" %}
+        {% for course in site.nav %}
+          {% for unit in course.units %}
+            {% for block in unit.blocks %}
+              {% for sub in block.subs %}
+                {% if sub.pages %}
+                  {% for leaf in sub.pages %}
+                    {% if leaf.url == page.url %}
+                      {% assign active_sub_id = sub.id %}
+                      {% assign active_block_id = block.id %}
+                      {% assign active_unit_id = unit.id %}
+                      {% assign active_course_id = course.id %}
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+              {% if block.pages %}
+                {% for leaf in block.pages %}
+                  {% if leaf.url == page.url %}
+                    {% assign active_block_id = block.id %}
+                    {% assign active_unit_id = unit.id %}
+                    {% assign active_course_id = course.id %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              {% if block.url and block.url == page.url %}
+                {% assign active_unit_id = unit.id %}
+                {% assign active_course_id = course.id %}
+              {% endif %}
+            {% endfor %}
+            {% if unit.pages %}
+              {% for leaf in unit.pages %}
+                {% if leaf.url == page.url %}
+                  {% assign active_unit_id = unit.id %}
+                  {% assign active_course_id = course.id %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+            {% if unit.url and unit.url == page.url %}
+              {% assign active_course_id = course.id %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+
+        {% for course in site.nav %}
+          <details class="node course"{% if course.id == active_course_id %} open{% endif %}>
+            <summary>
+              <span class="chevron"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8a93a0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+              <span class="node-label">{{ course.title }}</span>
+            </summary>
+            <div class="children">
+              {% for unit in course.units %}
+                {% if unit.blocks %}
+                  <details class="node unit"{% if unit.id == active_unit_id %} open{% endif %}>
+                    <summary>
+                      <span class="chevron"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8a93a0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                      <span class="node-label">{{ unit.title }}</span>
+                    </summary>
+                    <div class="children">
+                      {% for block in unit.blocks %}
+                        {% if block.subs %}
+                          <details class="node block"{% if block.id == active_block_id %} open{% endif %}>
+                            <summary>
+                              <span class="chevron"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8a93a0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                              <span class="node-label">{{ block.title }}</span>
+                            </summary>
+                            <div class="children">
+                              {% for sub in block.subs %}
+                                {% if sub.pages %}
+                                  <details class="node sub"{% if sub.id == active_sub_id %} open{% endif %}>
+                                    <summary>
+                                      <span class="chevron"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#9aa2ad" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                                      <span class="node-label">{{ sub.title }}</span>
+                                    </summary>
+                                    <div class="children pages">
+                                      {% for leaf in sub.pages %}
+                                        <a href="{{ leaf.url | relative_url }}" class="page-link{% if leaf.url == page.url %} active{% endif %}"{% if leaf.external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ leaf.title }}{% if leaf.external %} <span class="ext-icon" aria-hidden="true">↗</span>{% endif %}</a>
+                                      {% endfor %}
+                                    </div>
+                                  </details>
+                                {% else %}
+                                  <div class="node sub sub-disabled">
+                                    <span class="node-label">{{ sub.title }}</span>
+                                    <span class="badge">PRÓX.</span>
+                                  </div>
+                                {% endif %}
+                              {% endfor %}
+                            </div>
+                          </details>
+                        {% elsif block.pages %}
+                          <details class="node block"{% if block.id == active_block_id %} open{% endif %}>
+                            <summary>
+                              <span class="chevron"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8a93a0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                              <span class="node-label">{{ block.title }}</span>
+                            </summary>
+                            <div class="children pages">
+                              {% for leaf in block.pages %}
+                                <a href="{{ leaf.url | relative_url }}" class="page-link{% if leaf.url == page.url %} active{% endif %}"{% if leaf.external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ leaf.title }}{% if leaf.external %} <span class="ext-icon" aria-hidden="true">↗</span>{% endif %}</a>
+                              {% endfor %}
+                            </div>
+                          </details>
+                        {% elsif block.url %}
+                          <div class="node block">
+                            <a href="{{ block.url | relative_url }}" class="unit-link{% if block.url == page.url %} active{% endif %}"{% if block.external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ block.title }}{% if block.external %} <span class="ext-icon" aria-hidden="true">↗</span>{% endif %}</a>
+                          </div>
+                        {% else %}
+                          <div class="node block sub-disabled">
+                            <span class="node-label">{{ block.title }}</span>
+                            <span class="badge">PRÓX.</span>
+                          </div>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                  </details>
+                {% elsif unit.pages %}
+                  <details class="node unit"{% if unit.id == active_unit_id %} open{% endif %}>
+                    <summary>
+                      <span class="chevron"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8a93a0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                      <span class="node-label">{{ unit.title }}</span>
+                    </summary>
+                    <div class="children pages">
+                      {% for leaf in unit.pages %}
+                        <a href="{{ leaf.url | relative_url }}" class="page-link{% if leaf.url == page.url %} active{% endif %}"{% if leaf.external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ leaf.title }}{% if leaf.external %} <span class="ext-icon" aria-hidden="true">↗</span>{% endif %}</a>
+                      {% endfor %}
+                    </div>
+                  </details>
+                {% elsif unit.url %}
+                  <div class="node unit">
+                    <a href="{{ unit.url | relative_url }}" class="unit-link{% if unit.url == page.url %} active{% endif %}"{% if unit.external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ unit.title }}{% if unit.external %} <span class="ext-icon" aria-hidden="true">↗</span>{% endif %}</a>
+                  </div>
+                {% else %}
+                  <div class="node unit sub-disabled">
+                    <span class="node-label">{{ unit.title }}</span>
+                    <span class="badge">PRÓX.</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </details>
+        {% endfor %}
+      </nav>
+    </aside>
+
+    <main class="content">
+      {% if page.pdf %}
+        <a class="pdf-download" href="{{ page.pdf | relative_url }}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+          Descargar en PDF
+        </a>
+      {% endif %}
+      {{ content }}
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('nav-collapse-toggle');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var collapsed = document.documentElement.classList.toggle('nav-collapsed');
+        try { localStorage.setItem('daw-nav-collapsed', collapsed ? '1' : '0'); } catch (e) {}
+      });
+    })();
+  </script>
+</body>
+</html>

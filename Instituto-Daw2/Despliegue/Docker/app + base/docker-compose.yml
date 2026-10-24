@@ -1,0 +1,33 @@
+services:
+  app:
+    build: .
+    container_name: mi_app
+    environment:
+      - DB_HOST=db
+      - DB_USER=mi_usuario
+      - DB_PASSWORD=mi_password
+      - DB_NAME=mi_base_datos
+    depends_on:
+      - db
+
+  ubuntu1:
+    image: ubuntu:24.04
+    command: sleep infinity
+    depends_on:
+      - db
+
+  ubuntu2:
+    image: ubuntu:24.04
+    command: sleep infinity 
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: mi_usuario
+      POSTGRES_PASSWORD: mi_password
+      POSTGRES_DB: mi_base_datos
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

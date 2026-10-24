@@ -1,0 +1,45 @@
+{% extends 'portfolio/base_website.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+<br>
+<div class="container">
+    <h2>{{year}}</h2>
+    <br>	
+	<div class="container">
+		{% for object in objects %}
+			<a href="{% url 'proyecto' pk=object.id %}">
+				<div class="media col-sm-4 ">
+					<div class="well">
+						  <div class="media-left media-middle">
+						      <img class="media-object" src="{{object.imagen.url}}" alt="{{ object.titulo }}" width="100px" height="100px">
+						  </div>
+						  <div class="media-body media-middle">
+						    <h4 class="media-heading" style="vertical-align:middle">{{ object.titulo }}</h4>
+						  </div>					
+					</div>
+				</div>	
+			</a>	
+		{% endfor %}		
+
+	</div>
+
+	<div class="container">
+	    <ul class="pager">
+	            {% if objects.has_previous %}
+	                <li class="previous"><a href="?page={{ objects.previous_page_number }}">Anterior</a></li>
+	            {% endif %}
+
+	            {% if objects.has_next %}
+	                <li class="next"><a href="?page={{ objects.next_page_number }}">Siguiente</a></li>
+	            {% endif %}
+	    </ul>		
+	</div>
+
+
+</div>
+
+
+{% endblock %}
+

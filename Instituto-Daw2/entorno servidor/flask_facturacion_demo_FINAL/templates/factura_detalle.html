@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Factura{% endblock %}
+
+{% block content %}
+  <h1>Detalle de Factura</h1>
+  {% if error %}
+    <p style="color: red;">{{ error }}</p>
+  {% endif %}
+
+  {% if factura %}
+    <p><strong>ID:</strong> {{ factura.id }}</p>
+    <p><strong>Cliente:</strong> {{ cliente_nombre }}</p>
+    <p><strong>Concepto:</strong> {{ factura.concepto }}</p>
+    <p><strong>Fecha:</strong> {{ factura.fecha }}</p>
+    <p><strong>Total:</strong> {{ factura.total }}</p>
+    <p><strong>Estado:</strong> {{ estado_factura.estado }}</p>
+
+  {% else %}
+    <p>No se encontró la factura.</p>
+  {% endif %}
+
+{% endblock %}

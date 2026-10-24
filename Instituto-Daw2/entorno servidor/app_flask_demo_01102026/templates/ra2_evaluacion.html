@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Criterios RA2{% endblock %}
+
+{% block content %}
+  <h1>RA2. Escribe sentencias ejecutables por un servidor web reconociendo y aplicando procedimientos de integración del código en lenguaje de marcas</h1>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Lista de criterios</h2>
+      <ol>
+        {% for criterio in criterios %}
+          <li><strong>{{ criterio.id.upper() }})</strong> {{ criterio.texto }}</li>
+        {% endfor %}
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>Ejemplos de código</h2>
+      <pre>{% for ejemplo in ejemplos %}
+{{ ejemplo }}
+{% endfor %}</pre>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 1.5rem;">
+    <h2>Cómo se evidencian en esta app</h2>
+    <ul>
+      <li>Se usa Flask para servir páginas web desde Python.</li>
+      <li>Se usan plantillas Jinja2 para mostrar datos dinámicos.</li>
+      <li>Hay validación del formulario antes de guardar clientes y cobros.</li>
+      <li>Los estados de factura se calculan a partir de los cobros registrados.</li>
+      <li>Se trabaja con diccionarios, listas y variables para modelar el dominio.</li>
+      <li>Las reglas de negocio se aplican antes de aceptar cualquier operación.</li>
+    </ul>
+  </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Resumen de la demo{% endblock %}
+
+{% block content %}
+  <h1>Demo Flask: facturación con clientes, facturas y cobros</h1>
+  <p>Este ejemplo adapta el cuaderno de Python a una pequeña aplicación web para mostrar el funcionamiento de una lógica de negocio realista.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Clientes</h2>
+      <ul>
+        {% for cliente in clientes %}
+          <li>{{ cliente.nombre }} ({{ cliente.nif }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Facturas</h2>
+      <ul>
+        {% for factura in facturas %}
+          <li>{{ factura.id }} · {{ factura.total }} € · {{ factura.resumen.estado }} · {{ factura.cliente_nombre }} · {{ factura.nif_cliente }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {% include '_resumen_criterios.html' %}
+  </div>
+{% endblock %}

@@ -1,0 +1,51 @@
+.DS_Store
+
+# Temario fuente de las píldoras (material de una academia externa, con
+# derechos de terceros): se usa como referencia local, no se sube al repo.
+pildoras.pdf
+
+# Exámenes: no se suben a git (contienen preguntas/respuestas que no deben
+# quedar públicas en el historial). Se generan localmente con el script
+# correspondiente y se imprimen desde el PDF, sin pasar por el repositorio.
+*_examen.md
+*_examen_sol.md
+*_examen.pdf
+*_examen_sol.pdf
+*_examen.pptx
+*_examen_sol.pptx
+
+# PDF/PPTX generados por build.py (Marp): se quedan en local, no en el repo.
+# La web (GitHub Pages/Jekyll) se sirve directamente desde el Markdown.
+# Única excepción: el PDF de la teoría de cada semana, que sí se sube para
+# poder descargarlo/proyectarlo directamente.
+**/pdf/*
+!**/pdf/*_teoria.pdf
+**/pptx/
+
+# Excepción: en proyectos/ sí se suben el PDF y el PPTX generados (son
+# entregables/documentos de proyecto, no material de clase con examen).
+!proyectos/pdf/*
+!proyectos/pptx/
+
+# Build local de Jekyll (verificación de la web antes de hacer push).
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.dev-services/
+
+# Autocorrector: fotos de exámenes de alumnos, nunca se suben al repositorio
+# público (privacidad). Se mantiene la estructura de carpetas con .gitkeep.
+autocorrector/sources/**
+!autocorrector/sources/**/
+!autocorrector/sources/**/.gitkeep
+
+# Gemas de Ruby instaladas en local con "bundle install" (config en .bundle/,
+# gemas en vendor/bundle/). Jekyll ya excluye vendor/ de la web.
+.bundle/
+vendor/
+
+# Python (build.py, autocorrector) y secretos/ficheros temporales de editor.
+__pycache__/
+*.pyc
+.env
+*.swp

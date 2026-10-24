@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de clientes{% endblock %}
+
+{% block content %}
+  <h1>Clientes</h1>
+
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post">
+    <label for="id">Id</label>
+    <input id="id" name="id" type="number" required>
+
+    <label for="nombre">Nombre</label>
+    <input id="nombre" name="nombre" required>
+
+    <label for="nif">NIF/CIF</label>
+    <input id="nif" name="nif" required>
+
+    <label for="email">Email</label>
+    <input id="email" name="email" required>
+
+    <button type="submit">Guardar cliente</button>
+  </form>
+
+  <h2>Listado</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nombre</th>
+        <th>NIF/CIF</th>
+        <th>Email</th>
+        <th>Detalle</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cliente in clientes %}
+        <tr>
+          <td>{{ cliente.id }}</td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.nif }}</td>
+          <td>{{ cliente.email }}</td>
+          <td><a href="/clientes/{{ cliente.id }}">Ver detalle</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

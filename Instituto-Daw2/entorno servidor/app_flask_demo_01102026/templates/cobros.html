@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de cobros{% endblock %}
+
+{% block content %}
+  <h1>Cobros</h1>
+
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post">
+    <label for="id">Id</label>
+    <input id="id" name="id" type="number" required>
+
+    <label for="factura_id">Factura</label>
+    <select id="factura_id" name="factura_id" required>
+      {% for factura in facturas %}
+        <option value="{{ factura.id }}">{{ factura.id }} · {{ factura.concepto }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="fecha">Fecha</label>
+    <input id="fecha" name="fecha" type="date" required>
+
+    <label for="importe">Importe</label>
+    <input id="importe" name="importe" type="text" placeholder="250.00" required>
+
+    <button type="submit">Registrar cobro</button>
+  </form>
+
+  <h2>Listado</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Factura</th>
+        <th>Fecha</th>
+        <th>Importe</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cobro in cobros %}
+        <tr>
+          <td>{{ cobro.id }}</td>
+          <td>{{ cobro.factura_id }}</td>
+          <td>{{ cobro.fecha }}</td>
+          <td>{{ cobro.importe }} €</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

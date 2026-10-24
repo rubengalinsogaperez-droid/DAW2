@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de facturas{% endblock %}
+
+{% block content %}
+  <h1>Facturas</h1>
+
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post">
+    <label for="id">Id</label>
+    <input id="id" name="id" type="number" required>
+
+    <label for="cliente_id">Cliente</label>
+    <select id="cliente_id" name="cliente_id" required>
+      {% for cliente in clientes %}
+        <option value="{{ cliente.id }}">{{ cliente.nombre }} ({{ cliente.nif }})</option>
+      {% endfor %}
+    </select>
+
+    <label for="concepto">Concepto</label>
+    <input id="concepto" name="concepto" required>
+
+    <label for="fecha">Fecha</label>
+    <input id="fecha" name="fecha" type="date" required>
+
+    <label for="total">Total</label>
+    <input id="total" name="total" type="text" placeholder="1250.00" required>
+
+    <button type="submit">Guardar factura</button>
+  </form>
+
+  <h2>Listado</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Cliente</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th>Pendiente</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for factura in facturas %}
+        {% set resumen = factura.resumen %}
+        <tr>
+          <td>{{ factura.id }}</td>
+          <td>{{ factura.cliente_nombre }}</td>
+          <td>{{ factura.fecha }}</td>
+          <td>{{ factura.total }} €</td>
+          <td>
+            <span class="badge badge-{{ resumen.estado|lower }}">{{ resumen.estado }}</span>
+          </td>
+          <td>{{ resumen.pendiente }} €</td>
+          <td>
+            <a href="{{ url_for('factura_detalle', factura_id=factura.id) }}">Ver detalle</a>
+          </td>          
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

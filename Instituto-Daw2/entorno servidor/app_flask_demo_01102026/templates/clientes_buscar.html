@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Búsqueda de clientes{% endblock %}
+
+{% block content %}
+  <h1>Búsqueda de Clientes</h1>
+
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post">
+    <label for="nombre">Nombre</label>
+    <input id="nombre" name="nombre" required>
+
+    <button type="submit">Buscar cliente</button>
+  </form>
+
+  <h2>Listado</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nombre</th>
+        <th>NIF/CIF</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% if clientes %}
+      {% for cliente in clientes %}
+        <tr>
+          <td>{{ cliente['nombre'] }}</td>
+        </tr>
+      {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="4">No se encontraron clientes</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

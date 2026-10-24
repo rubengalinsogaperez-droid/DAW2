@@ -1,0 +1,54 @@
+// 1. Pedimos al usuario las dimensiones totales de la tabla
+let filas = prompt("Dime el numero de filas para hacer tu tabla");
+let columnas = prompt("Dime el numero de columnas para hacer tu tabla");
+
+// 2. Pedimos la celda exacta (fila y columna) donde se evaluará la parada
+let cualfilaparar = prompt("Dime en que fila paro de hacer la tabla");
+let cualcolumnaparar = prompt("Dime en que columna paro de hacer la tabla");
+
+// Convertimos todas las entradas a números enteros para poder compararlas correctamente
+filas = parseInt(filas);
+columnas = parseInt(columnas);
+cualcolumnaparar = parseInt(cualcolumnaparar);
+cualfilaparar = parseInt(cualfilaparar);
+
+let codigotabla = "<table>";
+let pararBucle = false; // Bandera (flag) para saber si debemos salir de los bucles
+
+// Bucle externo para recorrer las filas
+for (let i = 1; i <= filas; i++) {
+    codigotabla += "<tr>";
+    
+    // Bucle interno para recorrer las columnas
+    for (let u = 1; u <= columnas; u++) {
+        
+        // Añadimos la celda actual a la estructura de la tabla
+        codigotabla += `<td>Celda ${i},${u}</td>`;
+        
+        // 3. Comprobamos si hemos llegado exactamente a la celda de parada indicada
+        if (i === cualfilaparar && u === cualcolumnaparar) {
+            
+            // Preguntamos al usuario qué desea hacer mediante un prompt
+            let hacer = prompt("Has llegado a la celda indicada. Escribe 'Paro' si quieres abandonar la ejecución o cualquier otra cosa para continuar:");
+            
+            // Si el usuario escribe exactamente "Paro"
+            if (hacer === "Paro") {
+                pararBucle = true; // Activamos la bandera de parada
+                break;             // Rompemos el bucle interno de las columnas
+            }
+        }
+    }
+    
+    codigotabla += "</tr>"; // Cerramos la fila actual
+    
+    // Si la bandera está activada, rompemos también el bucle externo de las filas
+    if (pararBucle) {
+        break;
+    }
+}
+
+// Cerramos la etiqueta principal de la tabla
+codigotabla += "</table>";
+
+// Inyectamos el código HTML resultante dentro del div del documento
+document.getElementById("resultado").innerHTML = codigotabla;

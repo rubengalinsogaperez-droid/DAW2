@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del cliente {{ cliente_nombre }}{% endblock %}
+
+{% block content %}
+  <h1>Clientes</h1>
+
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <h2>Resumen del cliente {{ cliente_nombre }}</h2>
+  
+  <p>Número de facturas: {{ numero_facturas }}</p>
+  <p>Total facturas: {{ total_facturas }}</p>
+  <p>Total pendiente: {{ total_pendiente }}</p>
+  
+{% endblock %}

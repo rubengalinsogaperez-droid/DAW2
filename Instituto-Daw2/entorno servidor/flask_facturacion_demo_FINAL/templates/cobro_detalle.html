@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de cobro{% endblock %}
+
+{% block content %}
+  <h1>Detalle de cobro</h1>
+
+  {% if error %}
+    <p style="color: red;">{{ error }}</p>
+  {% endif %}
+
+  {% if cobro %}
+    <p><strong>ID:</strong> {{ cobro.id }}</p>
+    <p><strong>Factura ID:</strong> {{ cobro.factura_id }}</p>
+    <p><strong>Fecha:</strong> {{ cobro.fecha }}</p>
+    <p><strong>Importe:</strong> {{ cobro.importe }}</p>
+  {% else %}
+    <p>No se encontró el cobro.</p>
+  {% endif %}
+
+{% endblock %}
