@@ -32,7 +32,10 @@ urlpatterns = [
     path('contacto_fbv', views.contacto_view, name='contacto_fbv'),
     path('contacto_cbv', views.ContactoView.as_view(), name='contacto_cbv'),
     path('contacto', views.ContactoView.as_view(), name='contacto'),
-    
+    path('proyecto_create/', views.ProyectoCreateView.as_view(), name='proyecto_create'),
+    path('proyecto_update/<int:pk>/', views.ProyectoUpdateView.as_view(), name='proyecto_update'),
+    path('proyecto_delete/<int:pk>/', views.ProyectoDeleteView.as_view(), name='proyecto_delete'),
+
 ]
 if settings.DEBUG:
  urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

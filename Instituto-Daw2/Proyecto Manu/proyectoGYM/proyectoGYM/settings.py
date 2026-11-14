@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'common',
     'core',
     'billing',
+    
+    
 ]
 
 MIDDLEWARE = [

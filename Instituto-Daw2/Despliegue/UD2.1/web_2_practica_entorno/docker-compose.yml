@@ -1,0 +1,46 @@
+# Entorno de la práctica 2.2: servidor web delante, servidores de aplicaciones detrás
+#   docker compose up -d --build   → construye la imagen de la app y arranca todo
+#   docker compose down            → lo para y lo elimina
+# Las variables VERSION y CORS_ORIGIN se leen del fichero .env de esta carpeta.
+services:
+  web:
+    # Servidor web: sirve lo estático y reenvía /api/ a los backends (proxy inverso)
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+      - ./estatico:/usr/share/nginx/html:ro
+    depends_on:
+      - app1
+      - app2
+
+  # Dos instancias idénticas del servidor de aplicaciones (Node.js), creadas
+  # a partir de la MISMA imagen versionada: el artefacto.
+  app1:
+    build:
+      context: ./app
+      args:
+        - VERSION=${VERSION:-1.0.0}
+    image: miapp:${VERSION:-1.0.0}
+    hostname: app1
+    environment:
+      - CORS_ORIGIN=${CORS_ORIGIN:-}
+
+  app2:
+    build:
+      context: ./app
+      args:
+        - VERSION=${VERSION:-1.0.0}
+    image: miapp:${VERSION:-1.0.0}
+    hostname: app2
+    environment:
+      - CORS_ORIGIN=${CORS_ORIGIN:-}
+
+  otro-origen:
+    # Otra web, en otro origen (otro puerto), que intenta llamar a nuestra API
+    image: nginx:1.27-alpine
+    ports:
+      - "9090:80"
+    volumes:
+      - ./otro-origen:/usr/share/nginx/html:ro

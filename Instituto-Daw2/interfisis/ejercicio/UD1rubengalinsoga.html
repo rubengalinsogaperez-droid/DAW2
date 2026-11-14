@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio html Josep Juan :P</title>
+    <meta name="description" content="Artículos informativos sobre perros, gatos, pájaros y toros.">
+    <meta name="author" content="Ruben">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <h1>Artículos sobre animales</h1>
+
+    <nav>
+     <ul>
+        <li><a href="#perro">Perro</a></li>
+        <li><a href="#gato">Gato</a></li>
+        <li><a href="#pajaro">Pajaro</a></li>
+        <li><a href="#toro">Toro</a></li>
+     </ul>
+   </nav>
+
+    <article id="perro">
+        <h2>El perro, un compañero fiel</h2>
+        <p><i>El perro es un animal doméstico conocido por su lealtad y su capacidad para convivir con las personas. Hay perros de muchas razas, tamaños y temperamentos, y cada uno necesita cuidados adecuados.</i></p>
+        <ul type="square"><li>hola</li><li>caracola</li></ul>
+        <p><b>El ejercicio diario, una alimentación equilibrada y las visitas al veterinario ayudan a mantenerlo sano. También es importante dedicar tiempo a su educación y ofrecerle compañía.</b></p>
+        <ol type="I"><li>sup</li><li>josejuan</li></ol>
+    </article>
+
+    <article id="gato">
+        <h2>El gato, curioso e independiente</h2>
+        <p>El gato es un animal ágil que destaca por su curiosidad y por su gran habilidad para saltar y mantener el equilibrio. Aunque suele ser independiente, también disfruta jugando y descansando cerca de las personas.</p>
+        <br>
+        <a href="https://es.wikipedia.org/wiki/Felis_catus">Visitar documento externo</a>
+        <p>Para cuidarlo correctamente, necesita agua limpia, una alimentación apropiada, un espacio seguro y revisiones veterinarias. Un entorno con lugares para explorar y descansar contribuye a su bienestar.</p>
+        <form action="/enviar-datos" method="post">
+            <fieldset>
+                <label for="nombre">Nombre:</label>
+                <input type="text" name="nombre" id="nombre">
+                <br>
+                <label for="email">Email:</label>
+                <input type="email">
+                <br>
+                <label for="edad">Edad:</label>
+                <input type="number" name="edad" id="edad" min="18" max="99" value="0">
+                <br>
+                <label for="consulta">Deja aqui tu consulta</label>
+                <input type="textarea" name="consulta" id="consulta">
+                <br>
+                <input type="checkbox" name="politica" id="politica" value="aceptada" required>
+                <label for="politica">Acepto la política de privacidad y cookies</label>
+                <br>
+                <input type="checkbox" name="cookies_analisis" id="cookies_analisis" value="aceptadas">
+                <label for="cookies_analisis">Acepto cookies de análisis</label>
+                <br>
+                <input type="checkbox" name="cookies_publicidad" id="cookies_publicidad" value="aceptadas">
+                <label for="cookies_publicidad">Acepto cookies de publicidad</label>
+            </fieldset>
+        </form>
+    </article>
+
+    <article  id="pajaro">
+        <h2>El pájaro y su vida en el aire</h2>
+        <p>Los pájaros son animales vertebrados con plumas, pico y alas. Muchas especies vuelan, aunque algunas, como el avestruz, no pueden hacerlo. Su diversidad se aprecia en sus colores, cantos y formas de alimentarse.</p>
+        <p>En la naturaleza, las aves cumplen funciones importantes: algunas dispersan semillas y otras ayudan a controlar poblaciones de insectos. Observarlas sin molestarlas permite conocerlas y proteger sus hábitats.</p>
+        <br>
+        <table border="1">
+            <caption>lista de pajaros</caption>
+            <tr>
+                <th>Horario</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miercoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+            </tr>
+            <tr>
+                <td><strong>08:00 - 09:00</strong></td>
+                <td>Matematicas</td>
+                <td>Lengua</td>
+                <td>Lengua</td>
+                <td>Ingles</td>
+                <td>fisicayquimica</td>
+            </tr>
+            <tr>
+                <td><strong>09:00 - 10:00</strong></td>
+                <td>Matematicas</td>
+                <td>Lengua</td>
+                <td>Lengua</td>
+                <td>Ingles</td>
+                <td>fisicayquimica</td>
+            </tr>
+            <tr>
+                <td><strong>10:00 - 10:40</strong></td>
+                <td>Patio</td>
+                <td>Patio</td>
+                <td>Patio</td>
+                <td>Patio</td>
+                <td>Patio</td>
+            </tr>
+        </table>
+    </article>
+
+    <article  id="toro">
+        <h2>El toro, fuerza y tradición</h2>
+        <p>El toro es el macho adulto del ganado bovino. Es un animal robusto y herbívoro que se alimenta principalmente de hierba y otros vegetales. Como otros animales de gran tamaño, necesita espacio, agua y cuidados adecuados.</p>
+        <p>El ganado bovino ha tenido una relación estrecha con las comunidades rurales durante siglos. En la actualidad, el bienestar animal y el manejo responsable son aspectos esenciales de su cuidado.</p>
+        <img src="https://sierradelguadarrama.com/wp-content/uploads/2025/08/toro-de-lidia.jpg" alt="toro" width="50%">
+        <br>
+        <h2>Cabarceno:</h2><br>
+        <aside id="contenido">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5801.831828304856!2d-3.8306924855416016!3d43.357869433988434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd4936a0b0136e1d%3A0x9c2f586c48203b05!2s39627%20Cab%C3%A1rceno%2C%20Cantabria!5e0!3m2!1ses!2ses!4v1793269731484!5m2!1ses!2ses" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/K89Lw83Qvgw?si=J38UQV2DVrNTrySg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" ></iframe>    
+        </aside>
+        
+    </article>
+
+<footer>
+    <p><a href="mailto:contacto@ejemplo.com">Enviar un correo electrónico</a></p>
+    <p><a href="tel:+34600000000">Llamar por teléfono</a></p>
+</footer>
+</body>
+</html>

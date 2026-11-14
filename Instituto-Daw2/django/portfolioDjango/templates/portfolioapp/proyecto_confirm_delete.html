@@ -1,0 +1,11 @@
+{% extends 'portfolio/base.html' %}
+{% block content %}
+<div class="container">
+ <h2>Eliminar un proyecto</h2>
+ <form method="post">{% csrf_token %}
+ <p>¿Está seguro que quiere eliminar este proyecto "{{ object }}"?</p>
+ {{ form }}
+ <input type="submit" value="Confirmar" class="btn btn-danger">
+ </form>
+</div>
+{% endblock %}

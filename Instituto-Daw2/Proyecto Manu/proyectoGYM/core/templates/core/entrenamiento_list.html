@@ -1,0 +1,17 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Entrenamientos</h1>
+    <ul class="list-group mt-3">
+        {% for entrenamiento in object_list %}
+            <li class="list-group-item">
+                {{ entrenamiento.usuario.nickname }} — {{ entrenamiento.rutina.nombre }} — {{ entrenamiento.fecha }}
+            </li>
+        {% empty %}
+            <li class="list-group-item">No hay entrenamientos registrados.</li>
+        {% endfor %}
+    </ul>
+    {% include "pagination.html" %}
+</div>
+{% endblock main_content %}

@@ -1,0 +1,17 @@
+# Entorno de la práctica HTTP: estado y sesiones
+#   docker compose up -d      → arranca los dos servicios
+#   docker compose down       → los para y los elimina
+services:
+  httpbin:
+    # Servicio que "devuelve como un espejo" lo que le enviamos: ideal para estudiar HTTP
+    image: ghcr.io/mccutchen/go-httpbin:2.26.0
+    ports:
+      - "8080:8080"
+
+  sesiones:
+    # Mini aplicación PHP con login y sesiones
+    image: php:8.3-apache
+    ports:
+      - "8000:80"
+    volumes:
+      - ./app:/var/www/html:ro

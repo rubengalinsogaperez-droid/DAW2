@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="utf-8"><title>Otro origen</title></head>
+  <body style="font-family: system-ui, sans-serif; max-width: 48rem; margin: 2rem auto;">
+    <h1>Soy otra web: http://localhost:9090</h1>
+    <p>Esta página intenta leer la API de <code>http://localhost:8080/api/info</code> desde el navegador.</p>
+    <pre id="resultado">Pidiendo datos...</pre>
+    <p>Abre la consola de DevTools (F12) para ver los detalles.</p>
+    <script>
+      fetch("http://localhost:8080/api/info")
+        .then((r) => r.json())
+        .then((d) => { document.getElementById("resultado").textContent = "OK:\n" + JSON.stringify(d, null, 2); })
+        .catch((e) => { document.getElementById("resultado").textContent = "ERROR: " + e; });
+    </script>
+  </body>
+</html>

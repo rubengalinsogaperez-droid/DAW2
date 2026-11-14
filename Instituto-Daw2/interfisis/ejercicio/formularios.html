@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de matriculación</title>
+</head>
+<body>
+    <main>
+        <h1>Matriculación de estudiantes</h1>
+        <form action="/enviar-datos" method="post">
+            <p>
+                <label for="nia">Número de identificación de alumno (NIA):</label>
+                <input type="text" id="nia" name="nia" inputmode="numeric" required>
+            </p>
+
+            <p>
+                <label for="nombre">Nombre completo:</label>
+                <input type="text" id="nombre" name="nombre" autocomplete="name" required>
+            </p>
+
+            <p>
+                <label for="correo">Correo electrónico:</label>
+                <input type="email" id="correo" name="correo" required>
+            </p>
+
+            <p>
+                <label for="telefono">Número de teléfono:</label>
+                <input type="text" id="telefono" name="telefono" autocomplete="tel">
+            </p>
+
+            <p>
+                <label for="fecha-nacimiento">Fecha de nacimiento:</label>
+                <input type="date" id="fecha-nacimiento" name="fecha_nacimiento" required>
+            </p>
+
+            <p>
+                <label for="Comentarios-adicionales">Comentarios adicionales:</label>
+                <textarea type="textarea" id="comentarios-adicionales" name="comentarios-adicionales"
+                ></textarea>
+                
+            </p>
+
+            <fieldset>
+                <legend>Género del estudiante:</legend>
+                <label><input type="radio" name="genero" value="masculino" required> Masculino</label>
+                <label><input type="radio" name="genero" value="femenino"> Femenino</label>
+            </fieldset>
+
+            <p>
+                <label for="curso">Curso al que se quiere matricular:</label>
+                <select id="curso" name="curso" required>
+                    <option value="">Selecciona un curso</option>
+                    <option value="1">1.º Año</option>
+                    <option value="2">2.º Año</option>
+                    <option value="3">3.º Año</option>
+                    <option value="4">4.º Año</option>
+                </select>
+            </p>
+
+            <fieldset>
+                <legend>Asignaturas (puedes seleccionar varias):</legend>
+                <label><input type="checkbox" name="asignaturas[]" value="matematicas"> Matemáticas</label><br>
+                <label><input type="checkbox" name="asignaturas[]" value="lengua"> Lengua</label><br>
+                <label><input type="checkbox" name="asignaturas[]" value="historia"> Historia</label><br>
+                <label><input type="checkbox" name="asignaturas[]" value="biologia"> Biología</label><br>
+                <label><input type="checkbox" name="asignaturas[]" value="fisica"> Física</label><br>
+                <label><input type="checkbox" name="asignaturas[]" value="educacion-fisica"> Educación física</label>
+            </fieldset>
+            <p>
+                <fieldset>
+                    <label for="cuota-ampa">Desea pagar el ampa ahora?<small>(Asociación de Madres y Padres de Alumnos)</small></label>
+
+                    <br>
+                    <label id="cuota-ampa"><input type="radio" name="pagar" value="True">Si</label>
+                    <label id="cuota-ampa"><input type="radio" name="pagar" value="False">No</label>
+                </fieldset>
+            </p>
+
+            <p>
+                <fieldset>
+                    <label for="contraseña">Contraseña del alumno:</label>
+                    <label for="contraseña"><input type="password" name="contraseña" id="contraseña"></label>
+                </fieldset>
+            </p>
+
+            <button type="submit">Enviar matrícula</button>
+        </form>
+    </main>
+</body>
+</html>

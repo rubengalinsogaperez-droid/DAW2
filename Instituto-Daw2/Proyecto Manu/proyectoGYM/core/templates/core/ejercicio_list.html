@@ -1,0 +1,15 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Ejercicios</h1>
+    <ul class="list-group mt-3">
+        {% for ejercicio in object_list %}
+            <li class="list-group-item">{{ ejercicio.nombre }}</li>
+        {% empty %}
+            <li class="list-group-item">No hay ejercicios registrados.</li>
+        {% endfor %}
+    </ul>
+    {% include "pagination.html" %}
+</div>
+{% endblock main_content %}

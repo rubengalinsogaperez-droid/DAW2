@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mosaico - Plataforma por la Inclusión Social</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                        },
+                        secondary: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                        },
+                        amberAccent: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                        },
+                        tealAccent: {
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos de enfoque de accesibilidad mejorados */
+        :focus-visible {
+            outline: 3px solid #f59e0b !important;
+            outline-offset: 3px !important;
+        }
+        
+        /* Animaciones personalizadas */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-amberAccent-400 selection:text-slate-900">
+
+    <!-- Enlace directo para lectores de pantalla -->
+    <a href="#contenido-principal" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-amberAccent-500 focus:text-slate-900 focus:font-bold focus:rounded-md">
+        Saltar al contenido principal
+    </a>
+
+    <!-- HEADER / NAVEGACIÓN -->
+    <header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                
+                <!-- LOGO -->
+                <a href="#" class="flex items-center space-x-3 group focus:outline-none" aria-label="Mosaico - Inicio">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-primary-600 via-secondary-500 to-amberAccent-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+                        <i class="fa-solid font-bold fa-hands-holding-child text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-primary-800 via-secondary-600 to-slate-900 bg-clip-text text-transparent">
+                        Mosaico
+                    </span>
+                </a>
+
+                <!-- NAVEGACIÓN DESKTOP -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-2" aria-label="Navegación principal">
+                    <a href="#pilares" class="px-4 py-2 rounded-lg text-slate-700 hover:text-primary-700 hover:bg-primary-50 font-medium transition-colors">Nuestros Pilares</a>
+                    <a href="#historias" class="px-4 py-2 rounded-lg text-slate-700 hover:text-primary-700 hover:bg-primary-50 font-medium transition-colors">Historias de Impacto</a>
+                    <a href="#sumate" class="px-4 py-2 rounded-lg text-slate-700 hover:text-primary-700 hover:bg-primary-50 font-medium transition-colors">Unirse</a>
+                </nav>
+
+                <!-- BOTÓN ACCIÓN HEADER -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="#sumate" class="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-semibold shadow-md shadow-primary-600/20 hover:shadow-lg hover:shadow-primary-600/30 transition-all transform hover:-translate-y-0.5">
+                        Actúa Ahora
+                    </a>
+                </div>
+
+                <!-- BOTÓN MENÚ MÓVIL -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" type="button" class="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none" aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menú principal">
+                        <i id="menu-icon" class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENÚ MÓVIL DESPLEGABLE -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-2">
+            <a href="#pilares" class="mobile-nav-link block px-4 py-3 rounded-lg text-base font-medium text-slate-700 hover:bg-primary-50 hover:text-primary-700">Nuestros Pilares</a>
+            <a href="#historias" class="mobile-nav-link block px-4 py-3 rounded-lg text-base font-medium text-slate-700 hover:bg-primary-50 hover:text-primary-700">Historias de Impacto</a>
+            <a href="#sumate" class="mobile-nav-link block px-4 py-3 rounded-lg text-base font-medium text-slate-700 hover:bg-primary-50 hover:text-primary-700">Unirse</a>
+            <a href="#sumate" class="mobile-nav-link block text-center mt-4 px-5 py-3 rounded-xl bg-primary-600 text-white font-semibold shadow-md">Actúa Ahora</a>
+        </div>
+    </header>
+
+    <main id="contenido-principal">
+        <!-- SECCIÓN HERO -->
+        <section class="relative overflow-hidden bg-gradient-to-b from-primary-50/70 via-white to-slate-50 py-16 md:py-24 lg:py-32">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <div class="lg:col-span-7 text-center lg:text-left space-y-6">
+                        <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amberAccent-500/10 text-amber-900 font-semibold text-sm border border-amberAccent-500/20">
+                            <i class="fa-solid fa-sparkles text-amber-600"></i>
+                            <span>Construyendo un futuro para todos</span>
+                        </div>
+                        
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight">
+                            La diversidad es nuestra fuerza, la <span class="bg-gradient-to-r from-primary-600 via-secondary-600 to-tealAccent-600 bg-clip-text text-transparent">inclusión</span> nuestra meta.
+                        </h1>
+                        
+                        <p class="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                            Fomentamos oportunidades equitativas, accesibilidad universal y entornos integradores donde cada persona, independientemente de sus capacidades u origen, pueda alcanzar su máximo potencial.
+                        </p>
+                        
+                        <div class="pt-4 flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
+                            <a href="#sumate" class="px-8 py-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg shadow-lg shadow-primary-600/30 hover:shadow-xl hover:shadow-primary-600/40 transition-all transform hover:-translate-y-1 text-center">
+                                Sumarme a la Causa
+                            </a>
+                            <a href="#pilares" class="px-8 py-4 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-bold text-lg border border-slate-300 shadow-sm transition-all text-center flex items-center justify-center space-x-2">
+                                <span>Conoce el Proyecto</span>
+                                <i class="fa-solid fa-arrow-down text-sm"></i>
+                            </a>
+                        </div>
+
+                        <!-- Estadísticas Rápidas -->
+                        <div class="pt-10 grid grid-cols-3 gap-4 border-t border-slate-200/80">
+                            <div>
+                                <p class="text-2xl sm:text-3xl font-extrabold text-primary-700">+12K</p>
+                                <p class="text-xs sm:text-sm text-slate-500 font-medium">Personas Impactadas</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl sm:text-3xl font-extrabold text-secondary-600">95%</p>
+                                <p class="text-xs sm:text-sm text-slate-500 font-medium">Inserción Laboral</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl sm:text-3xl font-extrabold text-tealAccent-600">40+</p>
+                                <p class="text-xs sm:text-sm text-slate-500 font-medium">Comunidades</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ILUSTRACIÓN / COMPOSICIÓN -->
+                    <div class="lg:col-span-5 relative flex justify-center">
+                        <div class="w-full max-w-md relative">
+                            <!-- Fondo Decorativo -->
+                            <div class="absolute -top-6 -left-6 w-72 h-72 bg-secondary-500/20 rounded-full blur-3xl"></div>
+                            <div class="absolute -bottom-6 -right-6 w-72 h-72 bg-amberAccent-500/20 rounded-full blur-3xl"></div>
+                            
+                            <!-- Tarjeta Ilustrativa principal -->
+                            <div class="relative bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-100 space-y-6">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-14 h-14 rounded-2xl bg-tealAccent-500/10 text-tealAccent-600 flex items-center justify-center text-2xl font-bold">
+                                        <i class="fa-solid fa-universal-access"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="font-bold text-slate-900 text-lg">Entornos Sin Barreras</h2>
+                                        <p class="text-xs text-slate-500">Diseño universal para todos</p>
+                                    </div>
+                                </div>
+                                <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-tealAccent-500 to-primary-600 w-4/5 rounded-full"></div>
+                                </div>
+                                
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-3">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-slate-600 font-medium"><i class="fa-solid fa-check text-tealAccent-500 mr-2"></i>Accesibilidad Web & Física</span>
+                                        <span class="text-xs font-bold text-tealAccent-600">100%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-slate-600 font-medium"><i class="fa-solid fa-check text-tealAccent-500 mr-2"></i>Oportunidades de Empleo</span>
+                                        <span class="text-xs font-bold text-tealAccent-600">Activo</span>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200/60 flex items-start space-x-3">
+                                    <i class="fa-solid fa-heart text-amber-500 mt-1"></i>
+                                    <p class="text-xs text-amber-900 leading-relaxed font-medium">
+                                        "La inclusión no es traer a las personas a la estructura existente, es cambiar la estructura para acoger a todos."
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN NUESTROS PILARES -->
+        <section id="pilares" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                    <h2 class="text-xs font-bold tracking-widest text-primary-600 uppercase">Ejes de Acción</h2>
+                    <p class="text-3xl sm:text-4xl font-extrabold text-slate-900">
+                        Nuestros Pilares de Impacto
+                    </p>
+                    <p class="text-slate-600 text-lg">
+                        Trabajamos en múltiples frentes para derribar estereotipos, superar barreras y garantizar la equidad social.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    
+                    <!-- Tarjeta 1 -->
+                    <article class="group bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="w-14 h-14 rounded-2xl bg-primary-100 text-primary-600 flex items-center justify-center text-2xl group-hover:scale-110 group-hover:bg-primary-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-wheelchair-move"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-primary-600 transition-colors">
+                                Accesibilidad Universal
+                            </h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                Eliminación de barreras arquitectónicas, digitales y comunicativas para asegurar el libre tránsito y autonomía de todas las personas.
+                            </p>
+                        </div>
+                        <div class="pt-6 mt-6 border-t border-slate-200/60">
+                            <span class="text-xs font-bold text-primary-600 inline-flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                                <span>Saber más</span>
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </span>
+                        </div>
+                    </article>
+
+                    <!-- Tarjeta 2 -->
+                    <article class="group bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="w-14 h-14 rounded-2xl bg-secondary-500/10 text-secondary-600 flex items-center justify-center text-2xl group-hover:scale-110 group-hover:bg-secondary-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-secondary-600 transition-colors">
+                                Inserción Laboral
+                            </h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                Creación de alianzas con empresas conscientes para ofrecer puestos de trabajo dignos, adaptados y capacitaciones de vanguardia.
+                            </p>
+                        </div>
+                        <div class="pt-6 mt-6 border-t border-slate-200/60">
+                            <span class="text-xs font-bold text-secondary-600 inline-flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                                <span>Saber más</span>
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </span>
+                        </div>
+                    </article>
+
+                    <!-- Tarjeta 3 -->
+                    <article class="group bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="w-14 h-14 rounded-2xl bg-tealAccent-500/10 text-tealAccent-600 flex items-center justify-center text-2xl group-hover:scale-110 group-hover:bg-tealAccent-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-tealAccent-600 transition-colors">
+                                Educación Inclusiva
+                            </h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                Promoción de aulas diversas con metodologías pedagógicas inclusivas que respetan los diferentes ritmos y estilos de aprendizaje.
+                            </p>
+                        </div>
+                        <div class="pt-6 mt-6 border-t border-slate-200/60">
+                            <span class="text-xs font-bold text-tealAccent-600 inline-flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                                <span>Saber más</span>
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </span>
+                        </div>
+                    </article>
+
+                    <!-- Tarjeta 4 -->
+                    <article class="group bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="w-14 h-14 rounded-2xl bg-amberAccent-500/10 text-amber-900 flex items-center justify-center text-2xl group-hover:scale-110 group-hover:bg-amberAccent-500 group-hover:text-slate-900 transition-all">
+                                <i class="fa-solid fa-people-roof"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                                Diversidad Cultural
+                            </h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                Fomento de la cohesión comunitaria y el intercambio intercultural, creando puentes entre distintos orígenes e identidades.
+                            </p>
+                        </div>
+                        <div class="pt-6 mt-6 border-t border-slate-200/60">
+                            <span class="text-xs font-bold text-amber-600 inline-flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                                <span>Saber más</span>
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </span>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN TESTIMONIOS / HISTORIAS DE IMPACTO -->
+        <section id="historias" class="py-20 bg-gradient-to-b from-slate-50 to-primary-50/40 border-y border-slate-200/60">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                    <h2 class="text-xs font-bold tracking-widest text-primary-600 uppercase">Testimonios Reales</h2>
+                    <p class="text-3xl sm:text-4xl font-extrabold text-slate-900">
+                        Voces que inspiran el cambio
+                    </p>
+                    <p class="text-slate-600 text-lg">
+                        Conoce a las personas cuyas vidas se han transformado gracias a programas de inclusión real.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <!-- Testimonio 1 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-md border border-slate-100 flex flex-col justify-between space-y-6">
+                        <div class="space-y-4">
+                            <div class="text-amberAccent-500 flex space-x-1">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="text-slate-600 text-sm italic leading-relaxed">
+                                "Conseguir un puesto de trabajo adaptado a mis necesidades no solo me dio independencia económica, sino la dignidad de sentirme valorada por mis competencias profesional."
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-4 pt-4 border-t border-slate-100">
+                            <div class="w-12 h-12 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-lg">
+                                EA
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-900 text-sm">Elena Alvarado</p>
+                                <p class="text-xs text-slate-500">Desarrolladora Web & Becaria</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonio 2 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-md border border-slate-100 flex flex-col justify-between space-y-6">
+                        <div class="space-y-4">
+                            <div class="text-amberAccent-500 flex space-x-1">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="text-slate-600 text-sm italic leading-relaxed">
+                                "Gracias a los talleres de accesibilidad en las aulas de nuestro colegio, mi hijo con trastorno del espectro autista ahora cuenta con herramientas adaptadas y amigos que lo comprenden."
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-4 pt-4 border-t border-slate-100">
+                            <div class="w-12 h-12 rounded-full bg-secondary-100 text-secondary-700 flex items-center justify-center font-bold text-lg">
+                                MR
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-900 text-sm">Marcus Rodríguez</p>
+                                <p class="text-xs text-slate-500">Padre y Activista</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonio 3 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-md border border-slate-100 flex flex-col justify-between space-y-6">
+                        <div class="space-y-4">
+                            <div class="text-amberAccent-500 flex space-x-1">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="text-slate-600 text-sm italic leading-relaxed">
+                                "Transformar nuestra empresa en un espacio inclusivo abrió la puerta a talentos extraordinarios. La diversidad cultural ha enriquecido nuestras ideas de una forma increíble."
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-4 pt-4 border-t border-slate-100">
+                            <div class="w-12 h-12 rounded-full bg-tealAccent-500/20 text-tealAccent-600 flex items-center justify-center font-bold text-lg">
+                                SL
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-900 text-sm">Sofia Lin</p>
+                                <p class="text-xs text-slate-500">Directora de RRHH</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN FORMULARIO / UNIRSE -->
+        <section id="sumate" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-gradient-to-br from-primary-800 via-primary-700 to-secondary-600 rounded-3xl text-white overflow-hidden shadow-2xl">
+                    <div class="grid grid-cols-1 lg:grid-cols-12">
+                        
+                        <!-- Texto Informativo -->
+                        <div class="lg:col-span-5 p-8 sm:p-12 lg:p-16 flex flex-col justify-between space-y-8">
+                            <div class="space-y-4">
+                                <span class="px-3 py-1 rounded-full bg-white/20 text-xs font-semibold tracking-wide uppercase">Sé parte del cambio</span>
+                                <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight">Únete a nuestra red inclusiva</h2>
+                                <p class="text-primary-100 text-sm sm:text-base leading-relaxed">
+                                    Ya seas una persona particular, una empresa o una institución educativa, tu apoyo es indispensable para construir una sociedad justa.
+                                </p>
+                            </div>
+
+                            <div class="space-y-4 text-sm">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-amberAccent-400">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <span>Voluntariado y mentorías</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-amberAccent-400">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <span>Alianzas corporativas inclusivas</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-amberAccent-400">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <span>Capacitaciones y eventos de concienciación</span>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-white/20 text-xs text-primary-200">
+                                <p><i class="fa-solid fa-shield-halved mr-2"></i>Tus datos están protegidos conforme a las normativas de privacidad.</p>
+                            </div>
+                        </div>
+
+                        <!-- Formulario de contacto -->
+                        <div class="lg:col-span-7 bg-white p-8 sm:p-12 text-slate-800">
+                            <form id="inclusion-form" class="space-y-6" novalidate>
+                                <h3 class="text-2xl font-bold text-slate-900 mb-2">Formulario de Registro</h3>
+                                <p class="text-sm text-slate-500 mb-6">Completa tus datos y nos pondremos en contacto contigo a la brevedad.</p>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <!-- Nombre -->
+                                    <div class="space-y-2">
+                                        <label for="nombre" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Nombre Completo <span class="text-red-500">*</span></label>
+                                        <input type="text" id="nombre" name="nombre" required placeholder="Ej. Ana María Pérez" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-all outline-none text-sm">
+                                        <span id="error-nombre" class="text-xs text-red-600 hidden">Por favor ingresa tu nombre.</span>
+                                    </div>
+
+                                    <!-- Correo -->
+                                    <div class="space-y-2">
+                                        <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Correo Electrónico <span class="text-red-500">*</span></label>
+                                        <input type="email" id="email" name="email" required placeholder="ejemplo@correo.com" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-all outline-none text-sm">
+                                        <span id="error-email" class="text-xs text-red-600 hidden">Ingresa un correo electrónico válido.</span>
+                                    </div>
+                                </div>
+
+                                <!-- Rol / Tipo de Participación -->
+                                <div class="space-y-2">
+                                    <label for="rol" class="block text-xs font-bold uppercase tracking-wider text-slate-700">¿Cómo deseas colaborar? <span class="text-red-500">*</span></label>
+                                    <select id="rol" name="rol" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-all outline-none text-sm bg-white">
+                                        <option value="">Selecciona una opción</option>
+                                        <option value="voluntario">Deseo ser Voluntario/a</option>
+                                        <option value="empresa">Represento a una Empresa u Organización</option>
+                                        <option value="educador">Educador / Institución Académica</option>
+                                        <option value="beneficiario">Busco Apoyo u Orientación</option>
+                                    </select>
+                                    <span id="error-rol" class="text-xs text-red-600 hidden">Por favor selecciona una opción.</span>
+                                </div>
+
+                                <!-- Mensaje -->
+                                <div class="space-y-2">
+                                    <label for="mensaje" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Mensaje o Comentario</label>
+                                    <textarea id="mensaje" name="mensaje" rows="4" placeholder="Cuéntanos un poco sobre ti o tus inquietudes..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-all outline-none text-sm"></textarea>
+                                </div>
+
+                                <!-- Botón Envío -->
+                                <button type="submit" class="w-full py-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-base shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center space-x-2">
+                                    <span>Enviar Solicitud</span>
+                                    <i class="fa-solid fa-paper-plane text-sm"></i>
+                                </button>
+                            </form>
+
+                            <!-- Mensaje de Éxito Oculto -->
+                            <div id="mensaje-exito" class="hidden p-8 text-center space-y-4">
+                                <div class="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mx-auto text-3xl">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </div>
+                                <h4 class="text-2xl font-bold text-slate-900">¡Gracias por tu mensaje!</h4>
+                                <p class="text-slate-600 text-sm">Hemos recibido tu información correctamente. Un miembro de nuestro equipo se pondrá en contacto contigo pronto.</p>
+                                <button id="btn-reset" class="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold text-sm transition-colors">
+                                    Enviar otro formulario
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-300 py-16 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                
+                <!-- Columna 1: Marca -->
+                <div class="space-y-4 md:col-span-1">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-lg bg-primary-600 flex items-center justify-center text-white font-bold">
+                            <i class="fa-solid fa-hands-holding-child"></i>
+                        </div>
+                        <span class="text-xl font-extrabold text-white">Mosaico</span>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Promoviendo activamente la inclusión, la accesibilidad y la equidad social en todas las esferas comunitarias.
+                    </p>
+                </div>
+
+                <!-- Columna 2: Enlaces Rápidos -->
+                <div>
+                    <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-4">Navegación</h3>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="#pilares" class="hover:text-amberAccent-400 transition-colors">Nuestros Pilares</a></li>
+                        <li><a href="#historias" class="hover:text-amberAccent-400 transition-colors">Historias de Impacto</a></li>
+                        <li><a href="#sumate" class="hover:text-amberAccent-400 transition-colors">Unirse a la causa</a></li>
+                        <li><a href="#" class="hover:text-amberAccent-400 transition-colors">Recursos Accesibles</a></li>
+                    </ul>
+                </div>
+
+                <!-- Columna 3: Accesibilidad & Compromiso -->
+                <div>
+                    <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-4">Compromiso Web</h3>
+                    <ul class="space-y-2.5 text-sm">
+                        <li class="flex items-center space-x-2 text-slate-400">
+                            <i class="fa-solid fa-universal-access text-primary-400"></i>
+                            <span>Normas WCAG 2.1 AA</span>
+                        </li>
+                        <li class="flex items-center space-x-2 text-slate-400">
+                            <i class="fa-solid fa-eye text-primary-400"></i>
+                            <span>Alto Contraste Visual</span>
+                        </li>
+                        <li class="flex items-center space-x-2 text-slate-400">
+                            <i class="fa-solid fa-keyboard text-primary-400"></i>
+                            <span>Navegación Teclado</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Columna 4: Redes Sociales -->
+                <div>
+                    <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-4">Conéctate</h3>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-primary-600 text-slate-300 hover:text-white flex items-center justify-center transition-colors" aria-label="Síguenos en Twitter / X">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-primary-600 text-slate-300 hover:text-white flex items-center justify-center transition-colors" aria-label="Síguenos en LinkedIn">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-primary-600 text-slate-300 hover:text-white flex items-center justify-center transition-colors" aria-label="Síguenos en Instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                    </div>
+                    <p class="text-xs text-slate-500">Contacto: contacto@mosaicoinclusivo.org</p>
+                </div>
+
+            </div>
+
+            <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
+                <p>&copy; 2026 Mosaico Inclusión Social. Todos los derechos reservados.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="hover:text-slate-400 transition-colors">Política de Privacidad</a>
+                    <a href="#" class="hover:text-slate-400 transition-colors">Términos de Uso</a>
+                    <a href="#" class="hover:text-slate-400 transition-colors">Declaración de Accesibilidad</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Lógica del Menú Móvil
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+            function toggleMenu() {
+                const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
+                menuBtn.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+
+                if (isExpanded) {
+                    menuIcon.classList.remove('fa-xmark');
+                    menuIcon.classList.add('fa-bars');
+                } else {
+                    menuIcon.classList.remove('fa-bars');
+                    menuIcon.classList.add('fa-xmark');
+                }
+            }
+
+            menuBtn.addEventListener('click', toggleMenu);
+
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        toggleMenu();
+                    }
+                });
+            });
+
+            // 2. Validación Básica del Formulario de Contacto
+            const form = document.getElementById('inclusion-form');
+            const mensajeExito = document.getElementById('mensaje-exito');
+            const btnReset = document.getElementById('btn-reset');
+
+            const nombreInput = document.getElementById('nombre');
+            const emailInput = document.getElementById('email');
+            const rolSelect = document.getElementById('rol');
+
+            const errorNombre = document.getElementById('error-nombre');
+            const errorEmail = document.getElementById('error-email');
+            const errorRol = document.getElementById('error-rol');
+
+            function validarEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                let esValido = true;
+
+                // Validar Nombre
+                if (!nombreInput.value.trim()) {
+                    errorNombre.classList.remove('hidden');
+                    nombreInput.classList.add('border-red-500');
+                    esValido = false;
+                } else {
+                    errorNombre.classList.add('hidden');
+                    nombreInput.classList.remove('border-red-500');
+                }
+
+                // Validar Email
+                if (!validarEmail(emailInput.value.trim())) {
+                    errorEmail.classList.remove('hidden');
+                    emailInput.classList.add('border-red-500');
+                    esValido = false;
+                } else {
+                    errorEmail.classList.add('hidden');
+                    emailInput.classList.remove('border-red-500');
+                }
+
+                // Validar Selección de Rol
+                if (!rolSelect.value) {
+                    errorRol.classList.remove('hidden');
+                    rolSelect.classList.add('border-red-500');
+                    esValido = false;
+                } else {
+                    errorRol.classList.add('hidden');
+                    rolSelect.classList.remove('border-red-500');
+                }
+
+                // Si todo es válido
+                if (esValido) {
+                    form.classList.add('hidden');
+                    mensajeExito.classList.remove('hidden');
+                }
+            });
+
+            btnReset.addEventListener('click', () => {
+                form.reset();
+                form.classList.remove('hidden');
+                mensajeExito.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

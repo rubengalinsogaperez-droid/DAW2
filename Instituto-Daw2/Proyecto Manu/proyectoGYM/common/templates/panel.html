@@ -1,0 +1,68 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1 class="mb-5">Panel inicial</h1>
+    <h3>Datos maestros</h3>
+    <hr>
+    <div class = "row justify-content-evenly mb-5">
+        <div class="card col-sm-2">
+          <div class="card-body">
+            <h5 class="card-title">Usuarios</h5>
+            <p class="card-text">Consulta los usuarios registrados.</p>
+            <a href="{% url 'usuario_list' %}" class="btn btn-primary">Consultar</a>
+          </div>
+        </div>
+        <div class="card col-sm-2">
+          <div class="card-body">
+            <h5 class="card-title">Ejercicios</h5>
+            <p class="card-text">Consulta los ejercicios disponibles.</p>
+            <a href="{% url 'ejercicio_list' %}" class="btn btn-primary">Consultar</a>
+          </div>
+        </div>
+        <div class="card col-sm-2">
+          <div class="card-body">
+            <h5 class="card-title">Rutinas</h5>
+            <p class="card-text">Consulta las rutinas y sus ejercicios.</p>
+            <a href="{% url 'rutina_list' %}" class="btn btn-primary">Consultar</a>
+          </div>
+        </div>
+        <div class="card col-sm-2">
+          <div class="card-body">
+            <h5 class="card-title">Entrenamientos</h5>
+            <p class="card-text">Consulta las rutinas realizadas y sus fechas.</p>
+            <a href="{% url 'entrenamiento_list' %}" class="btn btn-primary">Consultar</a>
+          </div>
+        </div>
+    </div>
+
+
+    <h3>Facturación</h3>
+    <hr>
+    <div class = "row justify-content-evenly">
+        <div class="card col-sm-2" >
+          <div class="card-body">
+            <h5 class="card-title">Clientes</h5>
+            <p class="card-text">Clientes</p>
+            <a href="#" class="btn btn-primary">Consultar</a>
+          </div>
+        </div>
+        <div class="card col-sm-2" >
+          <div class="card-body">
+            <h5 class="card-title">Facturas</h5>
+            <p class="card-text">Facturas</p>
+            <a href="#" class="btn btn-primary">Consultar</a>
+          </div>
+        </div>
+        <div class="card col-sm-2" >
+          <div class="card-body">
+            <h5 class="card-title">Cobros</h5>
+            <p class="card-text">Cobros</p>
+            <a href="#" class="btn btn-primary">Consultar</a>
+          </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock main_content %}

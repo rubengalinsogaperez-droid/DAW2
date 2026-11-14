@@ -1,0 +1,15 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Usuarios</h1>
+    <ul class="list-group mt-3">
+        {% for usuario in object_list %}
+            <li class="list-group-item">{{ usuario.nickname }}</li>
+        {% empty %}
+            <li class="list-group-item">No hay usuarios registrados.</li>
+        {% endfor %}
+    </ul>
+    {% include "pagination.html" %}
+</div>
+{% endblock main_content %}
