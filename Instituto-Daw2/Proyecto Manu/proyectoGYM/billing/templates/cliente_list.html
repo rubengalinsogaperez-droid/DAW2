@@ -3,9 +3,12 @@
 {% block main_content %}
 <div class="container">
     <h1>Lista de clientes</h1>
+    <a href="{% url 'cliente_create' %}" class="btn btn-primary mt-2"> Crear cliente</a>
     <ul class="list-group mt-3">
     {% for cliente in object_list %}
         <a href="{% url 'cliente_detail' pk=cliente.id %}" class="list-group-item list-group-item-action">{{ cliente }}</a>
+        <!--Si tengo muchos clientes lo suyo seria buscar y editar dentro de el detial pero queria aprender lo siento mucho manu (-_-)   -->
+        <a href="{% url 'cliente_update' pk=cliente.id %}" class="btn btn-primary">Editar cliente</a>
     {% empty %}
         <p>No existen clientes.</p>
     {% endfor %}

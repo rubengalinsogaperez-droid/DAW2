@@ -1,0 +1,24 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Detalle de usuario</h1>
+    {% if usuario.foto_perfil %}
+        <p><img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil de {{ usuario.nickname }}" class="rounded-circle" width="160" height="160"></p>
+    {% else %}
+        <p class="text-muted">Este usuario todavía no tiene foto de perfil.</p>
+    {% endif %}
+    <dl class="row">
+        <dt class="col-sm-3">Nickname</dt>
+        <dd class="col-sm-9">{{ usuario.nickname }}</dd>
+        <dt class="col-sm-3">Altura</dt>
+        <dd class="col-sm-9">{{ usuario.altura|default:"No indicada" }}</dd>
+        <dt class="col-sm-3">Peso</dt>
+        <dd class="col-sm-9">{{ usuario.peso|default:"No indicado" }}</dd>
+        <dt class="col-sm-3">Objetivo</dt>
+        <dd class="col-sm-9">{{ usuario.objetivo }}</dd>
+    </dl>
+    <a href="{% url 'usuario_update' pk=usuario.pk %}" class="btn btn-primary mb-3">Editar o cambiar foto de perfil</a>
+
+</div>
+{% endblock main_content %}

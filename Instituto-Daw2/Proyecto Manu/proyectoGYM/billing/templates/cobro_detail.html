@@ -7,5 +7,7 @@
 <p>
     {{object}}
 </p>
+<a href="{% url 'cobro_update' pk=object.pk %}" class="btn btn-primary">Editar cobro</a>
+<a href="{% url 'cobro_delete' pk=object.pk %}" class="btn btn-primary">Borrar cobro</a>
 
 {% endblock main_content %}

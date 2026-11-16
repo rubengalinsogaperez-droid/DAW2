@@ -43,9 +43,9 @@ class EjercicioAdmin(admin.ModelAdmin):
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
     # Muestra y permite buscar o filtrar usuarios.
-    list_display = ("nickname", "objetivo", "perfil_privado")
+    list_display = ("nickname", "objetivo")
     search_fields = ("nickname", "objetivo")
-    list_filter = ("perfil_privado", "objetivo")
+    list_filter = ("objetivo",)
 
 
 @admin.register(Rutina)

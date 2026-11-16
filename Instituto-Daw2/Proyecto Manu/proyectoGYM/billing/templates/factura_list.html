@@ -4,9 +4,11 @@
 {% block main_content %}
 <div class="container">
     <h1>Lista de facturas</h1>
+    <a href="{% url 'factura_create' %}" class="btn btn-primary mt-2">Crear factura</a>
     <ul class="list-group mt-3 ">
     {% for factura in object_list %}
         <a href="{% url 'factura_detail' factura.id %}" class="list-group-item list-group-item-action">{{ factura }}</a>
+        <a href="{% url 'factura_update' pk=factura.id %}" class="btn btn-primary">Editar factura</a>
     {% empty %}
         <p>No existen facturas.</p>
     {% endfor %}

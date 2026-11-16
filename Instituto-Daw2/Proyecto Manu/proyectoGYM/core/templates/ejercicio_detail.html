@@ -1,0 +1,26 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Detalle de ejercicio</h1>
+    {% if ejercicio.imagen %}
+        <div class="mb-4 text-center">
+            <img src="{{ ejercicio.imagen.url }}" alt="Imagen de {{ ejercicio.nombre }}" class="img-fluid rounded shadow-sm" style="max-height: 420px; width: auto; object-fit: contain;">
+        </div>
+    {% else %}
+        <p class="text-muted">Este ejercicio todavía no tiene una imagen.</p>
+    {% endif %}
+    <dl class="row">
+        <dt class="col-sm-3">Nombre</dt>
+        <dd class="col-sm-9">{{ ejercicio.nombre }}</dd>
+        <dt class="col-sm-3">Descripción</dt>
+        <dd class="col-sm-9">{{ ejercicio.descripcion }}</dd>
+        <dt class="col-sm-3">Mayor peso</dt>
+        <dd class="col-sm-9">{{ ejercicio.mayor_peso|default:"No indicado" }}</dd>
+        <dt class="col-sm-3">Objetivo</dt>
+        <dd class="col-sm-9">{{ ejercicio.objetivo }}</dd>
+    </dl>
+    <a href="{% url 'ejercicio_update' pk=ejercicio.pk %}" class="btn btn-primary">Editar ejercicio</a>
+    <a href="{% url 'ejercicio_list' %}" class="btn btn-secondary">Cancelar</a>
+</div>
+{% endblock main_content %}

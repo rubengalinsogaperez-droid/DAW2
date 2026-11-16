@@ -7,7 +7,7 @@ from django.db import models
 #(^///^)
 class Usuario(models.Model):
     nickname = models.CharField(max_length=12, primary_key=True)
-    perfil_privado = models.BooleanField(default=False)
+    foto_perfil = models.ImageField(upload_to='perfiles/', null=True, blank=True)
     altura = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     peso = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     objetivo = models.CharField(max_length=50)
@@ -127,7 +127,9 @@ class Entrenamiento(models.Model):
     )
     rutina = models.ForeignKey(
     Rutina,
-    on_delete=models.CASCADE,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
     related_name='entrenamientos'
     )
     fecha = models.DateField()
@@ -142,7 +144,8 @@ class Entrenamiento(models.Model):
         #UD3.4.f
 
     def __str__(self):
-        return f"{self.usuario.nickname} - {self.rutina.nombre} - {self.fecha}"
+        rutina_nombre = self.rutina.nombre if self.rutina else 'Rutina eliminada'
+        return f"{self.usuario.nickname} - {rutina_nombre} - {self.fecha}"
     #UD3.3.b
 class UsuarioRutina(models.Model):
     usuario = models.ForeignKey(

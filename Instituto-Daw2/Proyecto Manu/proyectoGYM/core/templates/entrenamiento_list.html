@@ -1,0 +1,17 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Entrenamientos</h1>
+    <div class="list-group mt-3">
+        {% for entrenamiento in object_list %}
+            <a href="{% url 'entrenamiento_detail' pk=entrenamiento.pk %}" class="list-group-item list-group-item-action text-decoration-none">
+                {{ entrenamiento.usuario.nickname }} — {{ entrenamiento.rutina.nombre|default:"Rutina eliminada" }} — {{ entrenamiento.fecha }}
+            </a>
+        {% empty %}
+            <div class="list-group-item">No hay entrenamientos registrados.</div>
+        {% endfor %}
+    </div>
+    {% include "pagination.html" %}
+</div>
+{% endblock main_content %}

@@ -1,0 +1,16 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Rutinas</h1>
+    <a href="{% url 'rutina_create' %}" class="btn btn-primary">Crear rutina</a>
+    <div class="list-group mt-3">
+        {% for rutina in object_list %}
+            <a href="{% url 'rutina_detail' pk=rutina.pk %}" class="list-group-item list-group-item-action text-decoration-none">{{ rutina.nombre }}</a>
+        {% empty %}
+            <div class="list-group-item">No hay rutinas registradas.</div>
+        {% endfor %}
+    </div>
+    {% include "pagination.html" %}
+</div>
+{% endblock main_content %}
