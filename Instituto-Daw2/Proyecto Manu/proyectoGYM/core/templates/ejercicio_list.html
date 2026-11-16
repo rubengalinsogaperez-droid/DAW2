@@ -1,0 +1,21 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Ejercicios</h1>
+    <a href="{% url 'ejercicio_create' %}" class="btn btn-primary">Crear ejercicio</a>
+    <div class="list-group mt-3">
+        {% for ejercicio in object_list %}
+            <a href="{% url 'ejercicio_detail' pk=ejercicio.pk %}" class="list-group-item list-group-item-action text-decoration-none d-flex align-items-center gap-3">
+                {% if ejercicio.imagen %}
+                    <img src="{{ ejercicio.imagen.url }}" alt="Imagen de {{ ejercicio.nombre }}" class="rounded" width="72" height="72" style="object-fit: contain;">
+                {% endif %}
+                <span>{{ ejercicio.nombre }}</span>
+            </a>
+        {% empty %}
+            <div class="list-group-item">No hay ejercicios registrados.</div>
+        {% endfor %}
+    </div>
+    {% include "pagination.html" %}
+</div>
+{% endblock main_content %}

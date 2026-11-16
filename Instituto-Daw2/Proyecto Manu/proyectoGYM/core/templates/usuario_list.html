@@ -1,0 +1,21 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Lista de usuarios</h1>
+    <a href="{% url 'usuario_create' %}" class="btn btn-primary mt-2"> Crear Usuario</a>
+    <div class="list-group mt-3">
+        {% for usuario in object_list %}
+            <a href="{% url 'usuario_detail' pk=usuario.pk %}" class="list-group-item list-group-item-action text-decoration-none">
+                {% if usuario.foto_perfil %}
+                    <img src="{{ usuario.foto_perfil.url }}" alt="" class="rounded-circle me-2" width="48" height="48">
+                {% endif %}
+                {{ usuario.nickname }}
+            </a>
+        {% empty %}
+            <div class="list-group-item">No hay usuarios registrados.</div>
+        {% endfor %}
+    </div>
+    {% include "pagination.html" %}
+</div>
+{% endblock main_content %}

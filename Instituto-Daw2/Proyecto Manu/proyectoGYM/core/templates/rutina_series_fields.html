@@ -1,0 +1,15 @@
+{% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+<div class="mb-3">
+    <label for="{{ form.repeticiones.id_for_label }}" class="form-label">Repeticiones</label>
+    {{ form.repeticiones }}
+    {{ form.repeticiones.errors }}
+</div>
+<div class="mb-3">
+    <label for="{{ form.peso.id_for_label }}" class="form-label">Peso (kg)</label>
+    {{ form.peso }}
+    {{ form.peso.errors }}
+</div>
+<div class="form-check mb-3">
+    {{ form.DELETE }}
+    <label for="{{ form.DELETE.id_for_label }}" class="form-check-label">Quitar esta serie</label>
+</div>

@@ -1,0 +1,31 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Detalle de rutina: {{ rutina.nombre }}</h1>
+    <a href="{% url 'rutina_update' pk=rutina.pk %}" class="btn btn-primary mb-3">Editar rutina y ejercicios</a>
+    <h2>Ejercicios</h2>
+    <ul class="list-group">
+        {% for ejercicio_rutina in rutina.ejercicios_rutina.all %}
+            <li class="list-group-item">
+                <strong>{{ ejercicio_rutina.ejercicio.nombre }}</strong>
+                {% if ejercicio_rutina.tiempo %}
+                    — Duración: {{ ejercicio_rutina.tiempo }}
+                {% endif %}
+                {% for serie in ejercicio_rutina.series.all %}
+                    <div>Serie {{ serie.numero }}: {{ serie.repeticiones }} repeticiones, {{ serie.peso }} kg</div>
+                {% endfor %}
+                <a href="{% url 'rutina_series_update' pk=rutina.pk ejercicio_rutina_pk=ejercicio_rutina.pk %}" class="btn btn-sm btn-outline-primary mt-2">
+                    Editar repeticiones y peso
+                </a>
+            </li>
+        {% empty %}
+            <li class="list-group-item">Esta rutina todavía no tiene ejercicios.</li>
+        {% endfor %}
+    </ul>
+    <div class="mt-3">
+        <a href="{% url 'rutina_update' pk=rutina.pk %}" class="btn btn-primary">Editar rutina</a>
+        <a href="{% url 'rutina_list' %}" class="btn btn-outline-primary">Salir</a>
+    </div>
+</div>
+{% endblock main_content %}

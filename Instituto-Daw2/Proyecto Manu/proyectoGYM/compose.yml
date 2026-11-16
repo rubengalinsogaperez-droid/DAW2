@@ -1,9 +1,11 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: dockerfile
     container_name: proyectogym
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
+      - .:/app

@@ -1,0 +1,46 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Series de {{ ejercicio_rutina.ejercicio.nombre }}</h1>
+    <p>Rutina: {{ rutina.nombre }}</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {{ formset.non_form_errors }}
+        <div id="series-forms">
+        {% for form in formset %}
+            <div class="card card-body mb-3 series-form">
+                <h2>Serie {{ forloop.counter }}</h2>
+                {% include "rutina_series_fields.html" with form=form %}
+            </div>
+        {% endfor %}
+        </div>
+        <template id="empty-series-form">
+            {% include "rutina_series_fields.html" with form=formset.empty_form %}
+        </template>
+        <button type="button" id="add-series" class="btn btn-outline-primary mb-3">Añadir otra serie</button>
+        <p id="no-series" {% if formset.forms %}hidden{% endif %}>Este ejercicio todavía no tiene series.</p>
+        <button type="submit" class="btn btn-primary">Guardar series</button>
+        <a href="{% url 'rutina_detail' pk=rutina.pk %}" class="btn btn-secondary">Volver a la rutina</a>
+    </form>
+</div>
+<script>
+    const addSeriesButton = document.getElementById('add-series');
+    const seriesForms = document.getElementById('series-forms');
+    const totalSeriesForms = document.getElementById('id_series-TOTAL_FORMS');
+    const emptySeriesForm = document.getElementById('empty-series-form').innerHTML;
+    const noSeriesMessage = document.getElementById('no-series');
+
+    addSeriesButton.addEventListener('click', function () {
+        const index = Number(totalSeriesForms.value);
+        const seriesForm = document.createElement('div');
+        seriesForm.className = 'card card-body mb-3 series-form';
+        seriesForm.innerHTML = '<h2>Serie ' + (index + 1) + '</h2>' +
+            emptySeriesForm.replace(/__prefix__/g, index);
+        seriesForms.appendChild(seriesForm);
+        totalSeriesForms.value = index + 1;
+        noSeriesMessage.hidden = true;
+    });
+</script>
+{% endblock main_content %}

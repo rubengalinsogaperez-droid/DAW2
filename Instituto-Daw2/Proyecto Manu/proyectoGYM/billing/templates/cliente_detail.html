@@ -4,6 +4,7 @@
 {% block main_content %}
 <h1>Detalle de cliente</h1>
 <h6>{{object.nombre}}</h6>
-
-
+<a href="{% url 'cliente_update' pk=object.pk %}" class="btn btn-primary">Editar cliente</a>
+<!--Esto nos sirve para meternos dentro de el detalle de el clliente y si no nos gusta cambiarlo-->
+<a href="{% url 'cliente_delete' pk=object.pk %}" class="btn btn-primary">Borrar cliente</a>
 {% endblock main_content %}

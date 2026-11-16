@@ -7,5 +7,7 @@
 <p>
     {{object}}
 </p>
+<a href="{% url 'factura_update' pk=object.pk %}" class="btn btn-primary">Editar factura</a>
+<a href="{% url 'factura_delete' pk=object.pk %}" class="btn btn-primary">Borrar factura</a>
 
 {% endblock main_content %}

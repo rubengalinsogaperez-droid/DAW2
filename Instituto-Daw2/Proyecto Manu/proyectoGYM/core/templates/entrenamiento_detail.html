@@ -1,0 +1,17 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <h1>Detalle de entrenamiento</h1>
+    <dl class="row">
+        <dt class="col-sm-3">Usuario</dt>
+        <dd class="col-sm-9">{{ entrenamiento.usuario.nickname }}</dd>
+        <dt class="col-sm-3">Rutina</dt>
+        <dd class="col-sm-9">{{ entrenamiento.rutina.nombre|default:"Rutina eliminada" }}</dd>
+        <dt class="col-sm-3">Fecha</dt>
+        <dd class="col-sm-9">{{ entrenamiento.fecha }}</dd>
+        <dt class="col-sm-3">Notas</dt>
+        <dd class="col-sm-9">{{ entrenamiento.notas|default:"Sin notas" }}</dd>
+    </dl>
+</div>
+{% endblock main_content %}
