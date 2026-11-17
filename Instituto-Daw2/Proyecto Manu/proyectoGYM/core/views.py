@@ -9,7 +9,11 @@ from django.views.generic import (
 from django.db import transaction
 from django.urls import reverse_lazy, reverse
 #para el paginado
-from .forms import EjercicioRutinaFormSet, SerieEjercicioRutinaFormSet
+from .forms import (
+    EntrenamientoForm,
+    EjercicioRutinaFormSet,
+    SerieEjercicioRutinaFormSet,
+)
 from .models import (
     EjercicioRutina,
     Entrenamiento,
@@ -19,8 +23,12 @@ from .models import (
     Usuario,
     UsuarioRutina,
 )
-from common.mixins import CreateUpdateContextMixin
-from common.mixins import DeleteViewDependencyMixin
+from common.mixins import (
+    CreateUpdateContextMixin,
+    DeleteViewDependencyMixin,
+    OrderingListViewMixin,
+    UsuarioMetricValidationMixin,
+)
 
 
 
@@ -31,7 +39,7 @@ from common.mixins import DeleteViewDependencyMixin
 
 
 
-class UsuarioListView(ListView):
+class UsuarioListView(OrderingListViewMixin, ListView):
     model = Usuario
     template_name = "usuario_list.html"
     paginate_by = 10
@@ -42,7 +50,7 @@ def usuario_detail(request, pk):
     return render(request, "usuario_detail.html", {"usuario": usuario})
 
 
-class EjercicioListView(ListView):
+class EjercicioListView(OrderingListViewMixin, ListView):
     model = Ejercicio
     template_name = "ejercicio_list.html"
     paginate_by = 10
@@ -117,7 +125,7 @@ def ejercicio_detail(request, pk):
     return render(request, "ejercicio_detail.html", {"ejercicio": ejercicio})
 
 
-class RutinaListView(ListView):
+class RutinaListView(OrderingListViewMixin, ListView):
     model = Rutina
     template_name = "rutina_list.html"
     paginate_by = 2
@@ -305,15 +313,37 @@ def rutina_detail(request, pk):
     return render(request, "rutina_detail.html", {"rutina": rutina})
 
 
-class EntrenamientoListView(ListView):
+class EntrenamientoListView(OrderingListViewMixin, ListView):
     model = Entrenamiento
     template_name = "entrenamiento_list.html"
     paginate_by = 10
     queryset = Entrenamiento.objects.select_related("usuario", "rutina")
 
 
+class EntrenamientoCreateView(CreateView):
+    model = Entrenamiento
+    form_class = EntrenamientoForm
+    template_name = "base_create_update.html"
+    extra_context = {
+        'titulo_creacion': 'Registrar entrenamiento',
+        'titulo_actualizacion': None,
+        'url_borrado': None,
+        'entity_name': 'entrenamiento',
+        'list_url_name': 'entrenamiento_list',
+    }
+
+    def get_success_url(self):
+        return reverse('entrenamiento_detail', kwargs={'pk': self.object.pk})
+
+
 def entrenamiento_detail(request, pk):
-    entrenamiento = get_object_or_404(Entrenamiento, pk=pk)
+    entrenamiento = get_object_or_404(
+        Entrenamiento.objects.select_related('usuario', 'rutina').prefetch_related(
+            'rutina__ejercicios_rutina__ejercicio',
+            'rutina__ejercicios_rutina__series',
+        ),
+        pk=pk,
+    )
     return render(
         request,
         "entrenamiento_detail.html",
@@ -321,7 +351,12 @@ def entrenamiento_detail(request, pk):
     )
 
 #UD4.2.a Inicio
-class UsuarioCreateView(CreateUpdateContextMixin, CreateView):
+class UsuarioCreateView(
+    #UD4.2.h MIXIN PRIMERAVALIDACION
+    UsuarioMetricValidationMixin,
+    CreateUpdateContextMixin,
+    CreateView,
+):
     model = Usuario
     template_name = "base_create_update.html"
     fields = [
@@ -343,7 +378,12 @@ class UsuarioCreateView(CreateUpdateContextMixin, CreateView):
     success_url = reverse_lazy('usuario_list')
 
 
-class UsuarioUpdateView(CreateUpdateContextMixin, UpdateView):
+class UsuarioUpdateView(
+    #UD4.2.h MIXIN SEGUNDAVALIDACION
+    UsuarioMetricValidationMixin,
+    CreateUpdateContextMixin,
+    UpdateView,
+):
     model = Usuario
     template_name = "base_create_update.html"
     fields = [

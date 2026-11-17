@@ -3,14 +3,17 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy, reverse
 #reverse para que los que necesitan id o pk como cliente update
 #para el paginado
-from common.mixins import DeleteViewDependencyMixin
-from common.mixins import CreateUpdateContextMixin
+from common.mixins import (
+    CreateUpdateContextMixin,
+    DeleteViewDependencyMixin,
+    OrderingListViewMixin,
+)
 from billing.mixins import CobroMixin
 from billing.models import Cliente, Factura, Cobro
 
 
 
-class ClienteListView(ListView):
+class ClienteListView(OrderingListViewMixin, ListView):
     model = Cliente
     template_name = 'cliente_list.html'
     paginate_by = 10
@@ -21,7 +24,7 @@ class ClienteDetailView(DetailView):
     template_name = 'cliente_detail.html'
 
 
-class FacturaListView(ListView):
+class FacturaListView(OrderingListViewMixin, ListView):
     model = Factura
     template_name = 'factura_list.html'
     paginate_by = 10
@@ -32,7 +35,7 @@ class FacturaDetailView(DetailView):
     template_name = 'factura_detail.html'
 
 
-class CobroListView(ListView):
+class CobroListView(OrderingListViewMixin, ListView):
     model = Cobro
     template_name = 'cobro_list.html'
     paginate_by = 10

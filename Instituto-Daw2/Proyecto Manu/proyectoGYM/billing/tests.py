@@ -105,6 +105,40 @@ class ClienteCreateViewTests(TestCase):
         self.assertTrue(Cliente.objects.filter(pk=cliente.pk).exists())
 
 
+class ClienteListOrderingTests(TestCase):
+    def test_ordering_parameter_uses_cliente_primary_key(self):
+        primero = Cliente.objects.create(
+            nombre='Primero',
+            apellidos='Zeta',
+            nif='ORDER-1',
+            email='primero@example.com',
+        )
+        segundo = Cliente.objects.create(
+            nombre='Segundo',
+            apellidos='Alfa',
+            nif='ORDER-2',
+            email='segundo@example.com',
+        )
+
+        asc_response = self.client.get(
+            reverse('cliente_list'),
+            {'ordering': 'asc'},
+        )
+        desc_response = self.client.get(
+            reverse('cliente_list'),
+            {'ordering': 'desc'},
+        )
+
+        self.assertEqual(
+            [cliente.pk for cliente in asc_response.context['object_list']],
+            [primero.pk, segundo.pk],
+        )
+        self.assertEqual(
+            [cliente.pk for cliente in desc_response.context['object_list']],
+            [segundo.pk, primero.pk],
+        )
+
+
 class FacturaViewTests(TestCase):
     def setUp(self):
         self.cliente = Cliente.objects.create(

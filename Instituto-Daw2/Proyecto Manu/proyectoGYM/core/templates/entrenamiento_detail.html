@@ -13,5 +13,41 @@
         <dt class="col-sm-3">Notas</dt>
         <dd class="col-sm-9">{{ entrenamiento.notas|default:"Sin notas" }}</dd>
     </dl>
+    {% if entrenamiento.rutina %}
+        <h2>Ejercicios de la rutina</h2>
+        <div class="list-group">
+            {% for ejercicio_rutina in entrenamiento.rutina.ejercicios_rutina.all %}
+                <div class="list-group-item">
+                    <h3 class="h5">{{ ejercicio_rutina.ejercicio.nombre }}</h3>
+                    {% if ejercicio_rutina.ejercicio.imagen %}
+                        <img
+                            src="{{ ejercicio_rutina.ejercicio.imagen.url }}"
+                            alt="{{ ejercicio_rutina.ejercicio.nombre }}"
+                            class="img-fluid mb-2"
+                            style="max-height: 180px;"
+                        >
+                    {% endif %}
+                    {% if ejercicio_rutina.tiempo %}
+                        <p>Duración: {{ ejercicio_rutina.tiempo }}</p>
+                    {% endif %}
+                    <ul>
+                        {% for serie in ejercicio_rutina.series.all %}
+                            <li>Serie {{ serie.numero }}: {{ serie.repeticiones }} repeticiones, {{ serie.peso }} kg</li>
+                        {% empty %}
+                            <li>Sin series configuradas.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% empty %}
+                <div class="list-group-item">Esta rutina todavía no tiene ejercicios.</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="mt-3">
+        <a href="{% url 'entrenamiento_list' %}" class="btn btn-outline-primary">Volver a entrenamientos</a>
+        {% if entrenamiento.rutina %}
+            <a href="{% url 'rutina_detail' pk=entrenamiento.rutina.pk %}" class="btn btn-secondary">Ver rutina</a>
+        {% endif %}
+    </div>
 </div>
 {% endblock main_content %}

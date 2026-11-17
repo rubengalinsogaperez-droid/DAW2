@@ -98,6 +98,11 @@ urlpatterns = [
         name="entrenamiento_list",
     ),
     path(
+        "entrenamientos/crear/",
+        views.EntrenamientoCreateView.as_view(),
+        name="entrenamiento_create",
+    ),
+    path(
         "entrenamientos/<int:pk>/",
         views.entrenamiento_detail,
         name="entrenamiento_detail",

@@ -35,6 +35,11 @@ class CoreDetailViewTests(TestCase):
             rutina=self.rutina,
             ejercicio=self.ejercicio,
         )
+        SerieEjercicioRutina.objects.create(
+            ejercicio_rutina=self.rutina.ejercicios_rutina.get(),
+            peso=40,
+            repeticiones=8,
+        )
         self.entrenamiento = Entrenamiento.objects.create(
             usuario=self.usuario,
             rutina=self.rutina,
@@ -54,12 +59,129 @@ class CoreDetailViewTests(TestCase):
             response = self.client.get(reverse(route_name, kwargs={'pk': pk}))
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, expected_text)
+            if route_name == 'entrenamiento_detail':
+                self.assertContains(response, 'sentadilla')
+                self.assertContains(response, '8 repeticiones, 40,00 kg')
             if route_name == 'usuario_detail':
                 self.assertNotContains(response, 'Eliminar usuario')
             elif route_name == 'ejercicio_detail':
                 self.assertNotContains(response, 'Eliminar ejercicio')
             elif route_name == 'rutina_detail':
                 self.assertNotContains(response, 'Eliminar rutina')
+
+
+class ListViewOrderingTests(TestCase):
+    def test_ordering_parameter_sorts_users_by_primary_key(self):
+        Usuario.objects.create(pk='alfa', objetivo='salud')
+        Usuario.objects.create(pk='zeta', objetivo='salud')
+
+        response = self.client.get(
+            reverse('usuario_list'),
+            {'ordering': 'desc'},
+        )
+
+        self.assertEqual(
+            [usuario.pk for usuario in response.context['object_list']],
+            ['zeta', 'alfa'],
+        )
+        self.assertEqual(response.context['ordering'], 'desc')
+
+    def test_training_ordering_overrides_default_and_invalid_values_keep_it(self):
+        usuario = Usuario.objects.create(pk='orden', objetivo='salud')
+        rutina = Rutina.objects.create(nombre='orden_rutina')
+        primero = Entrenamiento.objects.create(
+            usuario=usuario,
+            rutina=rutina,
+            fecha=date(2026, 1, 1),
+        )
+        segundo = Entrenamiento.objects.create(
+            usuario=usuario,
+            rutina=rutina,
+            fecha=date(2026, 1, 2),
+        )
+        url = reverse('entrenamiento_list')
+
+        asc_response = self.client.get(url, {'ordering': 'asc'})
+        desc_response = self.client.get(url, {'ordering': 'desc'})
+        default_response = self.client.get(url, {'ordering': 'other'})
+
+        self.assertEqual(
+            [item.pk for item in asc_response.context['object_list']],
+            [primero.pk, segundo.pk],
+        )
+        self.assertEqual(
+            [item.pk for item in desc_response.context['object_list']],
+            [segundo.pk, primero.pk],
+        )
+        self.assertEqual(
+            [item.pk for item in default_response.context['object_list']],
+            [segundo.pk, primero.pk],
+        )
+        self.assertIsNone(default_response.context['ordering'])
+
+    def test_pagination_preserves_the_ordering_parameter(self):
+        for nombre in ('rutina_a', 'rutina_b', 'rutina_c'):
+            Rutina.objects.create(nombre=nombre)
+
+        response = self.client.get(
+            reverse('rutina_list'),
+            {'ordering': 'desc'},
+        )
+
+        self.assertContains(response, 'href="?page=2&ordering=desc"')
+
+
+class EntrenamientoCreateViewTests(TestCase):
+    def setUp(self):
+        self.usuario = Usuario.objects.create(pk='nuevo', objetivo='salud')
+        self.rutina = Rutina.objects.create(nombre='empuje')
+        self.create_url = reverse('entrenamiento_create')
+
+    def test_create_form_requires_a_routine_and_uses_a_date_picker(self):
+        response = self.client.get(self.create_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context['titulo_creacion'],
+            'Registrar entrenamiento',
+        )
+        self.assertContains(response, 'type="date"')
+        self.assertTrue(response.context['form'].fields['rutina'].required)
+
+    def test_create_training_saves_user_routine_date_and_notes(self):
+        response = self.client.post(
+            self.create_url,
+            {
+                'usuario': self.usuario.pk,
+                'rutina': self.rutina.pk,
+                'fecha': '2026-02-20',
+                'notas': 'Buen entrenamiento',
+            },
+        )
+
+        entrenamiento = Entrenamiento.objects.get()
+        self.assertRedirects(
+            response,
+            reverse('entrenamiento_detail', kwargs={'pk': entrenamiento.pk}),
+        )
+        self.assertEqual(entrenamiento.usuario, self.usuario)
+        self.assertEqual(entrenamiento.rutina, self.rutina)
+        self.assertEqual(entrenamiento.fecha, date(2026, 2, 20))
+        self.assertEqual(entrenamiento.notas, 'Buen entrenamiento')
+
+    def test_create_training_rejects_missing_routine(self):
+        response = self.client.post(
+            self.create_url,
+            {
+                'usuario': self.usuario.pk,
+                'fecha': '2026-02-20',
+                'notas': '',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Entrenamiento.objects.exists())
+        self.assertTrue(response.context['form'].errors['rutina'])
 
 
 class UsuarioCreateViewTests(TestCase):
@@ -78,6 +200,69 @@ class UsuarioCreateViewTests(TestCase):
         self.assertContains(response, 'name="foto_perfil"')
         self.assertContains(response, 'href="/core/usuarios/"')
         self.assertNotContains(response, 'Eliminar usuario')
+
+    def test_create_user_rejects_non_positive_height_and_weight(self):
+        response = self.client.post(
+            reverse('usuario_create'),
+            {
+                'nickname': 'metricas',
+                'objetivo': 'salud',
+                'altura': '0',
+                'peso': '-1',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Usuario.objects.filter(pk='metricas').exists())
+        self.assertEqual(
+            response.context['form'].errors['altura'],
+            ['La altura debe ser mayor que 0 metros.'],
+        )
+        self.assertEqual(
+            response.context['form'].errors['peso'],
+            ['El peso debe ser mayor que 0 kg.'],
+        )
+        self.assertContains(response, 'No se ha podido guardar el usuario')
+
+    def test_create_user_shows_success_message_for_valid_metrics(self):
+        response = self.client.post(
+            reverse('usuario_create'),
+            {
+                'nickname': 'valido',
+                'objetivo': 'salud',
+                'altura': '1.72',
+                'peso': '65',
+            },
+            follow=True,
+        )
+
+        self.assertRedirects(response, reverse('usuario_list'))
+        self.assertContains(response, 'Usuario guardado correctamente.')
+
+    def test_update_user_rejects_non_positive_height_and_weight(self):
+        usuario = Usuario.objects.create(pk='editar', objetivo='salud')
+        response = self.client.post(
+            reverse('usuario_update', kwargs={'pk': usuario.pk}),
+            {
+                'nickname': usuario.nickname,
+                'objetivo': usuario.objetivo,
+                'altura': '-1',
+                'peso': '0',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context['form'].errors['altura'],
+            ['La altura debe ser mayor que 0 metros.'],
+        )
+        self.assertEqual(
+            response.context['form'].errors['peso'],
+            ['El peso debe ser mayor que 0 kg.'],
+        )
+        usuario.refresh_from_db()
+        self.assertIsNone(usuario.altura)
+        self.assertIsNone(usuario.peso)
 
     def test_create_user_uploads_and_displays_profile_photo(self):
         image_buffer = BytesIO()
