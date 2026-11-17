@@ -19,7 +19,8 @@ from .models import (
     Usuario,
     UsuarioRutina,
 )
-from django.contrib import messages
+from common.mixins import CreateUpdateContextMixin
+from common.mixins import DeleteViewDependencyMixin
 
 
 
@@ -47,10 +48,14 @@ class EjercicioListView(ListView):
     paginate_by = 10
 
 
-class EjercicioCreateView(CreateView):
+class EjercicioCreateView(CreateUpdateContextMixin, CreateView):
     model = Ejercicio
     template_name = "base_create_update.html"
     fields = ['nombre', 'imagen', 'descripcion', 'mayor_peso', 'objetivo']
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = 'Crear ejercicio'
+    titulo_actualizacion = None
+    url_borrado = None
     extra_context = {
         'entity_name': 'ejercicio',
         'list_url_name': 'ejercicio_list',
@@ -58,14 +63,17 @@ class EjercicioCreateView(CreateView):
     success_url = reverse_lazy('ejercicio_list')
 
 
-class EjercicioUpdateView(UpdateView):
+class EjercicioUpdateView(CreateUpdateContextMixin, UpdateView):
     model = Ejercicio
     template_name = "base_create_update.html"
     fields = ['nombre', 'imagen', 'descripcion', 'mayor_peso', 'objetivo']
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = None
+    titulo_actualizacion = 'Actualizar ejercicio'
+    url_borrado = 'ejercicio_delete'
     extra_context = {
         'entity_name': 'ejercicio',
         'list_url_name': 'ejercicio_list',
-        'delete_url_name': 'ejercicio_delete',
     }
 
     def form_valid(self, form):
@@ -89,23 +97,20 @@ class EjercicioUpdateView(UpdateView):
         return reverse('ejercicio_detail', kwargs={'pk': self.object.pk})
 
 
-class EjercicioDeleteView(DeleteView):
+class EjercicioDeleteView(DeleteViewDependencyMixin, DeleteView):
     model = Ejercicio
     template_name = 'base_confirm_delete.html'
     success_url = reverse_lazy('ejercicio_list')
-    extra_context = {'list_url_name': 'ejercicio_list'}
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if self.object.rutinas_asociadas.exists():
-            messages.warning(
-                request,
-                'No se puede eliminar este ejercicio porque pertenece '
-                'a una o varias rutinas.',
-            )
-            return redirect('ejercicio_detail', pk=self.object.pk)
-        return super().post(request, *args, **kwargs)
-
+    dependency_relations = ('rutinas_asociadas',)
+    # UD4.2.e: Título y mensaje para la plantilla común de borrado.
+    extra_context = {
+        'list_url_name': 'ejercicio_list',
+        'titulo': 'Eliminar ejercicio',
+        'mensaje_confirmación': (
+            '¿Seguro que quieres eliminar este ejercicio? '
+            'Esta acción no se puede deshacer.'
+        ),
+    }
 
 def ejercicio_detail(request, pk):
     ejercicio = get_object_or_404(Ejercicio, pk=pk)
@@ -118,10 +123,14 @@ class RutinaListView(ListView):
     paginate_by = 2
 
 
-class RutinaCreateView(CreateView):
+class RutinaCreateView(CreateUpdateContextMixin, CreateView):
     model = Rutina
     template_name = "base_create_update.html"
     fields = ['nombre']
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = 'Crear rutina'
+    titulo_actualizacion = None
+    url_borrado = None
     extra_context = {
         'entity_name': 'rutina',
         'list_url_name': 'rutina_list',
@@ -129,10 +138,18 @@ class RutinaCreateView(CreateView):
     success_url = reverse_lazy('rutina_list')
 
 
-class RutinaUpdateView(UpdateView):
+class RutinaUpdateView(CreateUpdateContextMixin, UpdateView):
     model = Rutina
-    template_name = "rutina_update.html"
+    template_name = "base_create_update.html"
     fields = ['nombre']
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = None
+    titulo_actualizacion = 'Actualizar rutina'
+    url_borrado = 'rutina_delete'
+    extra_context = {
+        'entity_name': 'rutina',
+        'list_url_name': 'rutina_list',
+    }
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -263,11 +280,24 @@ class RutinaSeriesUpdateView(View):
         return self.render_formset(request, ejercicio_rutina, formset)
 
 
-class RutinaDeleteView(DeleteView):
+class RutinaDeleteView(DeleteViewDependencyMixin, DeleteView):
     model = Rutina
     template_name = 'base_confirm_delete.html'
     success_url = reverse_lazy('rutina_list')
-    extra_context = {'list_url_name': 'rutina_list'}
+    dependency_relations = (
+        'ejercicios_rutina',
+        'entrenamientos',
+        'usuarios_rutinas',
+    )
+    # UD4.2.e: Título y mensaje para la plantilla común de borrado.
+    extra_context = {
+        'list_url_name': 'rutina_list',
+        'titulo': 'Eliminar rutina',
+        'mensaje_confirmación': (
+            '¿Seguro que quieres eliminar esta rutina? '
+            'Esta acción no se puede deshacer.'
+        ),
+    }
 
 
 def rutina_detail(request, pk):
@@ -291,7 +321,7 @@ def entrenamiento_detail(request, pk):
     )
 
 #UD4.2.a Inicio
-class UsuarioCreateView(CreateView):
+class UsuarioCreateView(CreateUpdateContextMixin, CreateView):
     model = Usuario
     template_name = "base_create_update.html"
     fields = [
@@ -301,6 +331,10 @@ class UsuarioCreateView(CreateView):
         'peso',
         'objetivo',
     ]
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = 'Crear usuario'
+    titulo_actualizacion = None
+    url_borrado = None
     extra_context = {
         'entity_name': 'usuario',
         'list_url_name': 'usuario_list',
@@ -309,7 +343,7 @@ class UsuarioCreateView(CreateView):
     success_url = reverse_lazy('usuario_list')
 
 
-class UsuarioUpdateView(UpdateView):
+class UsuarioUpdateView(CreateUpdateContextMixin, UpdateView):
     model = Usuario
     template_name = "base_create_update.html"
     fields = [
@@ -319,31 +353,29 @@ class UsuarioUpdateView(UpdateView):
         'peso',
         'objetivo',
     ]
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = None
+    titulo_actualizacion = 'Actualizar usuario'
+    url_borrado = 'usuario_delete'
     extra_context = {
         'entity_name': 'usuario',
         'list_url_name': 'usuario_list',
-        'delete_url_name': 'usuario_delete',
     }
 
     def get_success_url(self):
         return reverse('usuario_detail', kwargs={'pk': self.object.pk})
 
-class UsuarioDeleteView(DeleteView):
+class UsuarioDeleteView(DeleteViewDependencyMixin, DeleteView):
     model = Usuario
     template_name = 'base_confirm_delete.html'
     success_url = reverse_lazy('usuario_list')
-    extra_context = {'list_url_name': 'usuario_list'}
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if (
-            self.object.entrenamientos.exists()
-            or self.object.usuarios_rutinas.exists()
-        ):
-            messages.warning(
-                request,
-                'No se puede eliminar este usuario porque tiene entrenamientos '
-                'o rutinas asignadas.',
-            )
-            return redirect('usuario_detail', pk=self.object.pk)
-        return super().post(request, *args, **kwargs)
+    dependency_relations = ('entrenamientos', 'usuarios_rutinas')
+    # UD4.2.e: Título y mensaje para la plantilla común de borrado.
+    extra_context = {
+        'list_url_name': 'usuario_list',
+        'titulo': 'Eliminar usuario',
+        'mensaje_confirmación': (
+            '¿Seguro que quieres eliminar este usuario? '
+            'Esta acción no se puede deshacer.'
+        ),
+    }

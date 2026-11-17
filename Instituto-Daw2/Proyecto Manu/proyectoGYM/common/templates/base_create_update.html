@@ -1,0 +1,37 @@
+{% extends "base_intranet.html" %}
+
+{% block main_content %}
+<div class="container">
+    <!-- UD4.2.c: El título y la URL de borrado se reciben desde la vista. -->
+    <h2>{% if object %}{{ titulo_actualizacion }}{% else %}{{ titulo_creacion }}{% endif %}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if ejercicio_formset %}
+            <h3>Ejercicios de la rutina</h3>
+            {{ ejercicio_formset.management_form }}
+            {{ ejercicio_formset.non_form_errors }}
+            {% for ejercicio_form in ejercicio_formset %}
+                <div class="card card-body mb-3">
+                    <h4>Ejercicio {{ forloop.counter }}</h4>
+                    {{ ejercicio_form.as_p }}
+                    {% if ejercicio_form.instance.pk %}
+                        <a href="{% url 'rutina_series_update' pk=object.pk ejercicio_rutina_pk=ejercicio_form.instance.pk %}" class="btn btn-outline-primary align-self-start">
+                            Editar repeticiones y peso
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <button type="submit" class="btn btn-primary">{% if ejercicio_formset %}Actualizar rutina y ejercicios{% elif object %}Actualizar{% else %}Crear{% endif %}</button>
+        {% if object and url_borrado %}
+            <a href="{% url url_borrado pk=object.pk %}" class="btn btn-danger">Eliminar {{ entity_name }}</a>
+        {% endif %}
+        {% if ejercicio_formset %}
+            <a href="{% url 'rutina_detail' pk=object.pk %}" class="btn btn-secondary">Cancelar</a>
+        {% else %}
+            <a href="{% url list_url_name %}" class="btn btn-secondary">Cancelar</a>
+        {% endif %}
+    </form>
+</div>
+{% endblock main_content %}

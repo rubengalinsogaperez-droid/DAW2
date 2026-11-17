@@ -67,6 +67,11 @@ class UsuarioCreateViewTests(TestCase):
         response = self.client.get(reverse('usuario_create'))
 
         self.assertEqual(response.status_code, 200)
+        # UD4.2.c: En creación se muestra su título y no se ofrece borrado.
+        self.assertEqual(response.context['titulo_creacion'], 'Crear usuario')
+        self.assertIsNone(response.context['titulo_actualizacion'])
+        self.assertIsNone(response.context['url_borrado'])
+        self.assertContains(response, '<h2>Crear usuario</h2>', html=True)
         self.assertEqual(response.context['entity_name'], 'usuario')
         self.assertEqual(response.context['list_url_name'], 'usuario_list')
         self.assertContains(response, 'enctype="multipart/form-data"')
@@ -127,6 +132,21 @@ class UsuarioCreateViewTests(TestCase):
                 update_response = self.client.get(
                     reverse('usuario_update', kwargs={'pk': usuario.pk})
                 )
+                # UD4.2.c: En actualización se muestra el título y el enlace de borrado.
+                self.assertEqual(
+                    update_response.context['titulo_actualizacion'],
+                    'Actualizar usuario',
+                )
+                self.assertIsNone(update_response.context['titulo_creacion'])
+                self.assertEqual(
+                    update_response.context['url_borrado'],
+                    'usuario_delete',
+                )
+                self.assertContains(
+                    update_response,
+                    '<h2>Actualizar usuario</h2>',
+                    html=True,
+                )
                 self.assertContains(
                     update_response,
                     reverse('usuario_delete', kwargs={'pk': usuario.pk}),
@@ -159,6 +179,18 @@ class UsuarioDeleteViewTests(TestCase):
         response = self.client.get(self.delete_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'base_confirm_delete.html')
+        # UD4.2.e: La vista aporta título y mensaje a la plantilla común.
+        self.assertEqual(response.context['titulo'], 'Eliminar usuario')
+        self.assertContains(
+            response,
+            f'<h2>Eliminar usuario: {self.usuario}</h2>',
+            html=True,
+        )
+        self.assertEqual(
+            response.context['mensaje_confirmación'],
+            '¿Seguro que quieres eliminar este usuario? '
+            'Esta acción no se puede deshacer.',
+        )
         self.assertContains(response, '¿Seguro que quieres eliminar')
 
         response = self.client.post(self.delete_url)
@@ -174,26 +206,30 @@ class UsuarioDeleteViewTests(TestCase):
             fecha=date(2026, 1, 15),
         )
 
-        response = self.client.post(self.delete_url, follow=True)
+        response = self.client.post(self.delete_url)
 
-        self.assertRedirects(
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
             response,
-            reverse('usuario_detail', kwargs={'pk': self.usuario.pk}),
+            f'No se puede eliminar {self.usuario}',
         )
-        self.assertContains(response, 'No se puede eliminar este usuario')
+        self.assertEqual(
+            list(response.context['messages'])[0].level_tag,
+            'error',
+        )
         self.assertTrue(Usuario.objects.filter(pk=self.usuario.pk).exists())
 
     def test_delete_is_blocked_when_user_has_assigned_routines(self):
         rutina = Rutina.objects.create(nombre='rutina_asignada')
         UsuarioRutina.objects.create(usuario=self.usuario, rutina=rutina)
 
-        response = self.client.post(self.delete_url, follow=True)
+        response = self.client.post(self.delete_url)
 
-        self.assertRedirects(
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
             response,
-            reverse('usuario_detail', kwargs={'pk': self.usuario.pk}),
+            f'No se puede eliminar {self.usuario}',
         )
-        self.assertContains(response, 'No se puede eliminar este usuario')
         self.assertTrue(Usuario.objects.filter(pk=self.usuario.pk).exists())
 
 
@@ -208,6 +244,11 @@ class EjercicioCrudViewTests(TestCase):
     def test_create_exercise(self):
         response = self.client.get(reverse('ejercicio_create'))
         self.assertEqual(response.status_code, 200)
+        # UD4.2.c: La vista de creación entrega el título en el contexto.
+        self.assertEqual(response.context['titulo_creacion'], 'Crear ejercicio')
+        self.assertIsNone(response.context['titulo_actualizacion'])
+        self.assertIsNone(response.context['url_borrado'])
+        self.assertContains(response, '<h2>Crear ejercicio</h2>', html=True)
         self.assertContains(response, 'enctype="multipart/form-data"')
         self.assertContains(response, 'name="imagen"')
         self.assertContains(response, '>Crear</button>')
@@ -230,6 +271,14 @@ class EjercicioCrudViewTests(TestCase):
         url = reverse('ejercicio_update', kwargs={'pk': self.ejercicio.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        # UD4.2.c: La vista de actualización entrega el título y URL de borrado.
+        self.assertEqual(
+            response.context['titulo_actualizacion'],
+            'Actualizar ejercicio',
+        )
+        self.assertIsNone(response.context['titulo_creacion'])
+        self.assertEqual(response.context['url_borrado'], 'ejercicio_delete')
+        self.assertContains(response, '<h2>Actualizar ejercicio</h2>', html=True)
         self.assertContains(response, '>Actualizar</button>')
         self.assertContains(
             response,
@@ -301,14 +350,13 @@ class EjercicioCrudViewTests(TestCase):
 
         response = self.client.post(
             reverse('ejercicio_delete', kwargs={'pk': self.ejercicio.pk}),
-            follow=True,
         )
 
-        self.assertRedirects(
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
             response,
-            reverse('ejercicio_detail', kwargs={'pk': self.ejercicio.pk}),
+            f'No se puede eliminar {self.ejercicio}',
         )
-        self.assertContains(response, 'No se puede eliminar este ejercicio')
         self.assertTrue(Ejercicio.objects.filter(pk=self.ejercicio.pk).exists())
 
     def test_exercise_photo_is_rendered_in_list_and_detail(self):
@@ -354,6 +402,11 @@ class RutinaCrudViewTests(TestCase):
     def test_create_routine(self):
         response = self.client.get(reverse('rutina_create'))
         self.assertEqual(response.status_code, 200)
+        # UD4.2.c: La rutina nueva usa el título de creación de la plantilla común.
+        self.assertEqual(response.context['titulo_creacion'], 'Crear rutina')
+        self.assertIsNone(response.context['titulo_actualizacion'])
+        self.assertIsNone(response.context['url_borrado'])
+        self.assertContains(response, '<h2>Crear rutina</h2>', html=True)
         self.assertEqual(response.context['entity_name'], 'rutina')
         self.assertNotContains(response, 'Eliminar rutina')
 
@@ -370,6 +423,16 @@ class RutinaCrudViewTests(TestCase):
             reverse('rutina_update', kwargs={'pk': self.rutina.pk})
         )
         self.assertEqual(response.status_code, 200)
+        # UD4.2.c: La actualización conserva su formset dentro de la plantilla común.
+        self.assertTemplateUsed(response, 'base_create_update.html')
+        self.assertEqual(
+            response.context['titulo_actualizacion'],
+            'Actualizar rutina',
+        )
+        self.assertIsNone(response.context['titulo_creacion'])
+        self.assertEqual(response.context['url_borrado'], 'rutina_delete')
+        self.assertContains(response, '<h2>Actualizar rutina</h2>', html=True)
+        self.assertContains(response, 'Ejercicios de la rutina')
         self.assertContains(response, 'Actualizar rutina y ejercicios')
         self.assertContains(
             response,
@@ -588,9 +651,12 @@ class RutinaCrudViewTests(TestCase):
         self.assertRedirects(response, reverse('rutina_list'))
         self.assertFalse(Rutina.objects.filter(pk=self.rutina.pk).exists())
 
-    def test_delete_routine_preserves_training_without_routine(self):
+    def test_delete_routine_with_related_records_shows_error(self):
         usuario = Usuario.objects.create(pk='usuario_rutina', objetivo='salud')
-        UsuarioRutina.objects.create(usuario=usuario, rutina=self.rutina)
+        usuario_rutina = UsuarioRutina.objects.create(
+            usuario=usuario,
+            rutina=self.rutina,
+        )
         entrenamiento = Entrenamiento.objects.create(
             usuario=usuario,
             rutina=self.rutina,
@@ -601,28 +667,31 @@ class RutinaCrudViewTests(TestCase):
             reverse('rutina_delete', kwargs={'pk': self.rutina.pk}),
         )
 
-        self.assertRedirects(response, reverse('rutina_list'))
-        self.assertFalse(Rutina.objects.filter(pk=self.rutina.pk).exists())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'No se puede eliminar {self.rutina}')
+        self.assertTrue(Rutina.objects.filter(pk=self.rutina.pk).exists())
         self.assertTrue(Usuario.objects.filter(pk=usuario.pk).exists())
-        self.assertFalse(UsuarioRutina.objects.filter(rutina_id='rutina_test').exists())
-        entrenamiento.refresh_from_db()
-        self.assertIsNone(entrenamiento.rutina)
-
-        detail_response = self.client.get(
-            reverse('entrenamiento_detail', kwargs={'pk': entrenamiento.pk})
+        self.assertTrue(
+            UsuarioRutina.objects.filter(pk=usuario_rutina.pk).exists()
         )
-        self.assertContains(detail_response, 'Rutina eliminada')
-        self.assertIn('Rutina eliminada', str(entrenamiento))
+        entrenamiento.refresh_from_db()
+        self.assertEqual(entrenamiento.rutina, self.rutina)
 
-    def test_delete_assigned_routine_preserves_user(self):
+    def test_delete_assigned_routine_shows_error(self):
         usuario = Usuario.objects.create(pk='usuario_asignado', objetivo='salud')
-        UsuarioRutina.objects.create(usuario=usuario, rutina=self.rutina)
+        usuario_rutina = UsuarioRutina.objects.create(
+            usuario=usuario,
+            rutina=self.rutina,
+        )
 
         response = self.client.post(
             reverse('rutina_delete', kwargs={'pk': self.rutina.pk}),
         )
 
-        self.assertRedirects(response, reverse('rutina_list'))
-        self.assertFalse(Rutina.objects.filter(pk=self.rutina.pk).exists())
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'No se puede eliminar {self.rutina}')
+        self.assertTrue(Rutina.objects.filter(pk=self.rutina.pk).exists())
         self.assertTrue(Usuario.objects.filter(pk=usuario.pk).exists())
-        self.assertFalse(UsuarioRutina.objects.filter(usuario=usuario).exists())
+        self.assertTrue(
+            UsuarioRutina.objects.filter(pk=usuario_rutina.pk).exists()
+        )

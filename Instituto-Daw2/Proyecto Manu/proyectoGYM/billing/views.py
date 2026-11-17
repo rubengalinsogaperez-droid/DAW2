@@ -1,10 +1,10 @@
-from django.contrib import messages
 #esto sirve para controlar y poner mensajes por pantalla 
-from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 #reverse para que los que necesitan id o pk como cliente update
 #para el paginado
+from common.mixins import DeleteViewDependencyMixin
+from common.mixins import CreateUpdateContextMixin
 from billing.models import Cliente, Factura, Cobro
 
 
@@ -44,10 +44,14 @@ class CobroDetailView(DetailView):
 
 #UD4.2.a Inicio
 
-class ClienteCreateView(CreateView):
+class ClienteCreateView(CreateUpdateContextMixin, CreateView):
     model = Cliente
     template_name = 'base_create_update.html'
     fields = ['nombre', 'apellidos', 'nif', 'email']
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = 'Crear cliente'
+    titulo_actualizacion = None
+    url_borrado = None
     extra_context = {'entity_name': 'cliente', 
                      'list_url_name': 'cliente_list'
                      }
@@ -58,98 +62,132 @@ class ClienteCreateView(CreateView):
         return reverse('cliente_update', kwargs={'pk': self.object.pk})
 
 
-class ClienteUpdateView(UpdateView):
+class ClienteUpdateView(CreateUpdateContextMixin, UpdateView):
     model = Cliente
     template_name = 'base_create_update.html'
     fields = ['nombre', 'apellidos', 'nif', 'email']
-    extra_context = {'entity_name': 'cliente', 'list_url_name': 'cliente_list'}
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = None
+    titulo_actualizacion = 'Actualizar cliente'
+    url_borrado = 'cliente_delete'
+    extra_context = {
+        'entity_name': 'cliente',
+        'list_url_name': 'cliente_list',
+    }
     def get_success_url(self):
         return reverse('cliente_update', kwargs={'pk': self.object.pk})
 
-class ClienteDeleteView(DeleteView):
+class ClienteDeleteView(DeleteViewDependencyMixin, DeleteView):
     model = Cliente
     template_name = 'base_confirm_delete.html'
     success_url = reverse_lazy('cliente_list')
-    extra_context = {'list_url_name': 'cliente_list'}
+    dependency_relations = ('factura_set',)
+    # UD4.2.e: Título y mensaje para la plantilla común de borrado.
+    extra_context = {
+        'list_url_name': 'cliente_list',
+        'titulo': 'Eliminar cliente',
+        'mensaje_confirmación': (
+            '¿Seguro que quieres eliminar este cliente? '
+            'Esta acción no se puede deshacer.'
+        ),
+    }
 
-    #como si tiene facturas asociadas da un errro kilometrico y no queremos que el usuario 
-    #vea eso vamos a controlarlo (Sacado de copilot)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        #si existe una factura asociada al usuario envia un mensaje y redirije a cliente detail
-        if self.object.factura_set.exists():
-            messages.warning(
-                request,
-                'No se puede borrar este cliente porque tiene facturas asociadas.',
-            )
-            return redirect('cliente_detail', pk=self.object.pk)
-        #En caso contrario sigue por chill por su lao sin entrar en el if 
-        return super().post(request, *args, **kwargs)
-
-
-class FacturaCreateView(CreateView):
+class FacturaCreateView(CreateUpdateContextMixin, CreateView):
     model = Factura
     template_name = 'base_create_update.html'
     fields = ['cliente', 'numero', 'concepto', 'fecha', 'total']
-    extra_context = {'entity_name': 'factura', 'list_url_name': 'factura_list'}
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = 'Crear factura'
+    titulo_actualizacion = None
+    url_borrado = None
+    extra_context = {
+        'entity_name': 'factura',
+        'list_url_name': 'factura_list',
+    }
 
     def get_success_url(self):
         return reverse('factura_update', kwargs={'pk': self.object.pk})
 
 
-class FacturaUpdateView(UpdateView):
+class FacturaUpdateView(CreateUpdateContextMixin, UpdateView):
     model = Factura
     template_name = 'base_create_update.html'
     fields = ['cliente', 'numero', 'concepto', 'fecha', 'total']
-    extra_context = {'entity_name': 'factura', 'list_url_name': 'factura_list'}
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = None
+    titulo_actualizacion = 'Actualizar factura'
+    url_borrado = 'factura_delete'
+    extra_context = {
+        'entity_name': 'factura',
+        'list_url_name': 'factura_list',
+    }
 
     def get_success_url(self):
         return reverse('factura_update', kwargs={'pk': self.object.pk})
 
 
-class FacturaDeleteView(DeleteView):
+class FacturaDeleteView(DeleteViewDependencyMixin, DeleteView):
     model = Factura
     template_name = 'base_confirm_delete.html'
     success_url = reverse_lazy('factura_list')
-    extra_context = {'list_url_name': 'factura_list'}
+    dependency_relations = ('cobro_set',)
+    # UD4.2.e: Título y mensaje para la plantilla común de borrado.
+    extra_context = {
+        'list_url_name': 'factura_list',
+        'titulo': 'Eliminar factura',
+        'mensaje_confirmación': (
+            '¿Seguro que quieres eliminar esta factura? '
+            'Esta acción no se puede deshacer.'
+        ),
+    }
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if self.object.cobro_set.exists():
-            messages.warning(
-                request,
-                'No se puede borrar esta factura porque tiene cobros asociados.',
-            )
-            return redirect('factura_detail', pk=self.object.pk)
-        return super().post(request, *args, **kwargs)
-
-
-class CobroCreateView(CreateView):
+class CobroCreateView(CreateUpdateContextMixin, CreateView):
     model = Cobro
     template_name = 'base_create_update.html'
     fields = ['factura', 'fecha', 'importe']
-    extra_context = {'entity_name': 'cobro', 'list_url_name': 'cobro_list'}
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = 'Crear cobro'
+    titulo_actualizacion = None
+    url_borrado = None
+    extra_context = {
+        'entity_name': 'cobro',
+        'list_url_name': 'cobro_list',
+    }
 
     def get_success_url(self):
         return reverse('cobro_update', kwargs={'pk': self.object.pk})
 
 
-class CobroUpdateView(UpdateView):
+class CobroUpdateView(CreateUpdateContextMixin, UpdateView):
     model = Cobro
     template_name = 'base_create_update.html'
     fields = ['factura', 'fecha', 'importe']
-    extra_context = {'entity_name': 'cobro', 'list_url_name': 'cobro_list'}
+    # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
+    titulo_creacion = None
+    titulo_actualizacion = 'Actualizar cobro'
+    url_borrado = 'cobro_delete'
+    extra_context = {
+        'entity_name': 'cobro',
+        'list_url_name': 'cobro_list',
+    }
 
     def get_success_url(self):
         return reverse('cobro_update', kwargs={'pk': self.object.pk})
 
 
-class CobroDeleteView(DeleteView):
+class CobroDeleteView(DeleteViewDependencyMixin, DeleteView):
     model = Cobro
     template_name = 'base_confirm_delete.html'
     success_url = reverse_lazy('cobro_list')
     # Indica a la plantilla compartida a qué listado volver si se cancela.
-    extra_context = {'list_url_name': 'cobro_list'}
+    # UD4.2.e: Título y mensaje para la plantilla común de borrado.
+    extra_context = {
+        'list_url_name': 'cobro_list',
+        'titulo': 'Eliminar cobro',
+        'mensaje_confirmación': (
+            '¿Seguro que quieres eliminar este cobro? '
+            'Esta acción no se puede deshacer.'
+        ),
+    }
 
     #UD4.2.a 

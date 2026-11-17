@@ -2,8 +2,9 @@
 
 {% block main_content %}
 <div class="container">
-    <h1>¿Seguro que quieres eliminar {{ object }}?</h1>
-    <!--Object es de django y sirve para buscar el nombre del objeto en este caso por su primary key-->
+    <!-- UD4.2.e: El título y el mensaje de confirmación llegan desde la vista. -->
+    <h2>{{ titulo }}: {{ object }}</h2>
+    <p>{{ mensaje_confirmación }}</p>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}

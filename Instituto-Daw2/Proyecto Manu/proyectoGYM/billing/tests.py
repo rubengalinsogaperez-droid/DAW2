@@ -63,12 +63,24 @@ class ClienteCreateViewTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'base_confirm_delete.html')
+        # UD4.2.e: La vista aporta el contexto de confirmación de borrado.
+        self.assertEqual(response.context['titulo'], 'Eliminar cliente')
+        self.assertContains(
+            response,
+            f'<h2>Eliminar cliente: {cliente}</h2>',
+            html=True,
+        )
+        self.assertEqual(
+            response.context['mensaje_confirmación'],
+            '¿Seguro que quieres eliminar este cliente? '
+            'Esta acción no se puede deshacer.',
+        )
 
         response = self.client.post(url)
         self.assertRedirects(response, reverse('cliente_list'))
         self.assertFalse(Cliente.objects.filter(pk=cliente.pk).exists())
 
-    def test_delete_cliente_with_facturas_shows_warning(self):
+    def test_delete_cliente_with_facturas_shows_error(self):
         cliente = Cliente.objects.create(
             nombre='Ada',
             apellidos='Lovelace',
@@ -82,13 +94,10 @@ class ClienteCreateViewTests(TestCase):
         )
         url = reverse('cliente_delete', kwargs={'pk': cliente.pk})
 
-        response = self.client.post(url, follow=True)
+        response = self.client.post(url)
 
-        self.assertRedirects(
-            response,
-            reverse('cliente_detail', kwargs={'pk': cliente.pk}),
-        )
-        self.assertContains(response, 'No se puede borrar este cliente')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'No se puede eliminar {cliente}')
         self.assertTrue(Cliente.objects.filter(pk=cliente.pk).exists())
 
 
@@ -166,7 +175,7 @@ class FacturaViewTests(TestCase):
         self.assertRedirects(response, reverse('factura_list'))
         self.assertFalse(Factura.objects.filter(pk=factura.pk).exists())
 
-    def test_delete_factura_with_cobros_shows_warning(self):
+    def test_delete_factura_with_cobros_shows_error(self):
         factura = Factura.objects.create(
             cliente=self.cliente,
             numero='FAC-COBRO',
@@ -175,13 +184,10 @@ class FacturaViewTests(TestCase):
         Cobro.objects.create(factura=factura, importe='10.00')
         url = reverse('factura_delete', kwargs={'pk': factura.pk})
 
-        response = self.client.post(url, follow=True)
+        response = self.client.post(url)
 
-        self.assertRedirects(
-            response,
-            reverse('factura_detail', kwargs={'pk': factura.pk}),
-        )
-        self.assertContains(response, 'No se puede borrar esta factura')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'No se puede eliminar {factura}')
         self.assertTrue(Factura.objects.filter(pk=factura.pk).exists())
 
 
