@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.db.models.deletion import ProtectedError
+from django.http import HttpResponseRedirect
 
 
 class CreateUpdateContextMixin:
@@ -17,7 +18,7 @@ class CreateUpdateContextMixin:
         })
         return context
 
-#4.2.f
+#UD4.2.f
 class DeleteViewDependencyMixin:
     dependency_relations = ()
 
@@ -27,17 +28,17 @@ class DeleteViewDependencyMixin:
             for relation in self.dependency_relations
         )
         if has_dependencies:
-            return self.show_dependency_error(form)
+            return self.show_dependency_error()
 
         try:
             return super().form_valid(form)
         except ProtectedError:
-            return self.show_dependency_error(form)
+            return self.show_dependency_error()
 
-    def show_dependency_error(self, form):
+    def show_dependency_error(self):
         messages.error(
             self.request,
-            f'No se puede eliminar {self.object} porque tiene dependencias. '
-            'Elimina primero los elementos relacionados.',
+            f'Existen dependencias para el objeto {self.object}. '
+            'Elimine antes dichas dependencias',
         )
-        return self.form_invalid(form)
+        return HttpResponseRedirect(self.get_success_url())

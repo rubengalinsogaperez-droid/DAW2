@@ -94,10 +94,14 @@ class ClienteCreateViewTests(TestCase):
         )
         url = reverse('cliente_delete', kwargs={'pk': cliente.pk})
 
-        response = self.client.post(url)
+        response = self.client.post(url, follow=True)
 
+        self.assertRedirects(response, reverse('cliente_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f'No se puede eliminar {cliente}')
+        self.assertContains(
+            response,
+            f'Existen dependencias para el objeto {cliente}.',
+        )
         self.assertTrue(Cliente.objects.filter(pk=cliente.pk).exists())
 
 
@@ -184,10 +188,14 @@ class FacturaViewTests(TestCase):
         Cobro.objects.create(factura=factura, importe='10.00')
         url = reverse('factura_delete', kwargs={'pk': factura.pk})
 
-        response = self.client.post(url)
+        response = self.client.post(url, follow=True)
 
+        self.assertRedirects(response, reverse('factura_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f'No se puede eliminar {factura}')
+        self.assertContains(
+            response,
+            f'Existen dependencias para el objeto {factura}.',
+        )
         self.assertTrue(Factura.objects.filter(pk=factura.pk).exists())
 
 
@@ -225,14 +233,51 @@ class CobroViewTests(TestCase):
             reverse('cobro_update', kwargs={'pk': cobro.pk}),
         )
 
+    def test_create_cobro_cannot_exceed_invoice_total(self):
+        Cobro.objects.create(factura=self.factura, importe='30.00')
+
+        response = self.client.post(reverse('cobro_create'), {
+            'factura': self.factura.pk,
+            'fecha': '2026-01-15',
+            'importe': '25.00',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            'La suma de los importes de los cobros no puede superar '
+            'el importe de la factura.',
+            response.context['form'].errors['importe'],
+        )
+        self.assertEqual(Cobro.objects.filter(factura=self.factura).count(), 1)
+
     def test_update_cobro(self):
         cobro = Cobro.objects.create(factura=self.factura, importe='25.00')
+        Cobro.objects.create(factura=self.factura, importe='20.00')
         url = reverse('cobro_update', kwargs={'pk': cobro.pk})
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'base_create_update.html')
         self.assertContains(response, 'Actualizar cobro')
+
+        response = self.client.post(url, {
+            'factura': self.factura.pk,
+            'fecha': '2026-01-15',
+            'importe': '31.00',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            'La suma de los importes de los cobros no puede superar '
+            'el importe de la factura.',
+            response.context['form'].errors['importe'],
+        )
+        cobro.refresh_from_db()
+        self.assertEqual(cobro.importe, 25)
+
+    def test_update_cobro_does_not_count_its_old_amount_twice(self):
+        cobro = Cobro.objects.create(factura=self.factura, importe='25.00')
+        url = reverse('cobro_update', kwargs={'pk': cobro.pk})
 
         response = self.client.post(url, {
             'factura': self.factura.pk,

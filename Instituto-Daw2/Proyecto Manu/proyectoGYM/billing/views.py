@@ -5,6 +5,7 @@ from django.urls import reverse_lazy, reverse
 #para el paginado
 from common.mixins import DeleteViewDependencyMixin
 from common.mixins import CreateUpdateContextMixin
+from billing.mixins import CobroMixin
 from billing.models import Cliente, Factura, Cobro
 
 
@@ -141,7 +142,7 @@ class FacturaDeleteView(DeleteViewDependencyMixin, DeleteView):
         ),
     }
 
-class CobroCreateView(CreateUpdateContextMixin, CreateView):
+class CobroCreateView(CobroMixin, CreateUpdateContextMixin, CreateView):
     model = Cobro
     template_name = 'base_create_update.html'
     fields = ['factura', 'fecha', 'importe']
@@ -158,7 +159,7 @@ class CobroCreateView(CreateUpdateContextMixin, CreateView):
         return reverse('cobro_update', kwargs={'pk': self.object.pk})
 
 
-class CobroUpdateView(CreateUpdateContextMixin, UpdateView):
+class CobroUpdateView(CobroMixin, CreateUpdateContextMixin, UpdateView):
     model = Cobro
     template_name = 'base_create_update.html'
     fields = ['factura', 'fecha', 'importe']

@@ -206,12 +206,13 @@ class UsuarioDeleteViewTests(TestCase):
             fecha=date(2026, 1, 15),
         )
 
-        response = self.client.post(self.delete_url)
+        response = self.client.post(self.delete_url, follow=True)
 
+        self.assertRedirects(response, reverse('usuario_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            f'No se puede eliminar {self.usuario}',
+            f'Existen dependencias para el objeto {self.usuario}.',
         )
         self.assertEqual(
             list(response.context['messages'])[0].level_tag,
@@ -223,12 +224,13 @@ class UsuarioDeleteViewTests(TestCase):
         rutina = Rutina.objects.create(nombre='rutina_asignada')
         UsuarioRutina.objects.create(usuario=self.usuario, rutina=rutina)
 
-        response = self.client.post(self.delete_url)
+        response = self.client.post(self.delete_url, follow=True)
 
+        self.assertRedirects(response, reverse('usuario_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            f'No se puede eliminar {self.usuario}',
+            f'Existen dependencias para el objeto {self.usuario}.',
         )
         self.assertTrue(Usuario.objects.filter(pk=self.usuario.pk).exists())
 
@@ -350,12 +352,14 @@ class EjercicioCrudViewTests(TestCase):
 
         response = self.client.post(
             reverse('ejercicio_delete', kwargs={'pk': self.ejercicio.pk}),
+            follow=True,
         )
 
+        self.assertRedirects(response, reverse('ejercicio_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            f'No se puede eliminar {self.ejercicio}',
+            f'Existen dependencias para el objeto {self.ejercicio}.',
         )
         self.assertTrue(Ejercicio.objects.filter(pk=self.ejercicio.pk).exists())
 
@@ -665,10 +669,15 @@ class RutinaCrudViewTests(TestCase):
 
         response = self.client.post(
             reverse('rutina_delete', kwargs={'pk': self.rutina.pk}),
+            follow=True,
         )
 
+        self.assertRedirects(response, reverse('rutina_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f'No se puede eliminar {self.rutina}')
+        self.assertContains(
+            response,
+            f'Existen dependencias para el objeto {self.rutina}.',
+        )
         self.assertTrue(Rutina.objects.filter(pk=self.rutina.pk).exists())
         self.assertTrue(Usuario.objects.filter(pk=usuario.pk).exists())
         self.assertTrue(
@@ -686,10 +695,15 @@ class RutinaCrudViewTests(TestCase):
 
         response = self.client.post(
             reverse('rutina_delete', kwargs={'pk': self.rutina.pk}),
+            follow=True,
         )
 
+        self.assertRedirects(response, reverse('rutina_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f'No se puede eliminar {self.rutina}')
+        self.assertContains(
+            response,
+            f'Existen dependencias para el objeto {self.rutina}.',
+        )
         self.assertTrue(Rutina.objects.filter(pk=self.rutina.pk).exists())
         self.assertTrue(Usuario.objects.filter(pk=usuario.pk).exists())
         self.assertTrue(
