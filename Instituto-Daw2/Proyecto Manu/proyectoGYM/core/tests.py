@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from io import BytesIO
 from tempfile import TemporaryDirectory
 
@@ -6,6 +6,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.test import override_settings
 from django.urls import reverse
+from django.utils import timezone
 from PIL import Image
 
 from .models import (
@@ -17,6 +18,10 @@ from .models import (
     Usuario,
     UsuarioRutina,
 )
+
+
+def response_message_texts(response):
+    return [str(message) for message in response.wsgi_request._messages]
 
 
 class CoreDetailViewTests(TestCase):
@@ -168,6 +173,10 @@ class EntrenamientoCreateViewTests(TestCase):
         self.assertEqual(entrenamiento.rutina, self.rutina)
         self.assertEqual(entrenamiento.fecha, date(2026, 2, 20))
         self.assertEqual(entrenamiento.notas, 'Buen entrenamiento')
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {entrenamiento}'],
+        )
 
     def test_create_training_rejects_missing_routine(self):
         response = self.client.post(
@@ -182,6 +191,25 @@ class EntrenamientoCreateViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Entrenamiento.objects.exists())
         self.assertTrue(response.context['form'].errors['rutina'])
+
+    def test_create_training_rejects_future_date(self):
+        future_date = (timezone.localdate() + timedelta(days=1)).isoformat()
+        response = self.client.post(
+            self.create_url,
+            {
+                'usuario': self.usuario.pk,
+                'rutina': self.rutina.pk,
+                'fecha': future_date,
+                'notas': '',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Entrenamiento.objects.exists())
+        self.assertEqual(
+            response.context['form'].errors['fecha'],
+            ['La fecha del entrenamiento no puede ser futura.'],
+        )
 
 
 class UsuarioCreateViewTests(TestCase):
@@ -237,7 +265,10 @@ class UsuarioCreateViewTests(TestCase):
         )
 
         self.assertRedirects(response, reverse('usuario_list'))
-        self.assertContains(response, 'Usuario guardado correctamente.')
+        self.assertContains(
+            response,
+            'Se ha guardado correctamente: valido',
+        )
 
     def test_update_user_rejects_non_positive_height_and_weight(self):
         usuario = Usuario.objects.create(pk='editar', objetivo='salud')
@@ -452,7 +483,32 @@ class EjercicioCrudViewTests(TestCase):
         )
 
         self.assertRedirects(response, reverse('ejercicio_list'))
-        self.assertTrue(Ejercicio.objects.filter(pk='sentadilla').exists())
+        ejercicio = Ejercicio.objects.get(pk='sentadilla')
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {ejercicio}'],
+        )
+
+    def test_create_exercise_rejects_non_positive_maximum_weight(self):
+        for mayor_peso in ('0', '-1'):
+            with self.subTest(mayor_peso=mayor_peso):
+                nombre = f'ejercicio-{mayor_peso}'
+                response = self.client.post(
+                    reverse('ejercicio_create'),
+                    {
+                        'nombre': nombre,
+                        'descripcion': 'Ejercicio de prueba',
+                        'objetivo': 'fuerza',
+                        'mayor_peso': mayor_peso,
+                    },
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertFalse(Ejercicio.objects.filter(pk=nombre).exists())
+                self.assertEqual(
+                    response.context['form'].errors['mayor_peso'],
+                    ['El mayor peso debe ser superior a 0 kg.'],
+                )
 
     def test_update_exercise_redirects_to_detail(self):
         url = reverse('ejercicio_update', kwargs={'pk': self.ejercicio.pk})
@@ -486,6 +542,10 @@ class EjercicioCrudViewTests(TestCase):
             response,
             reverse('ejercicio_detail', kwargs={'pk': self.ejercicio.pk}),
         )
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {self.ejercicio}'],
+        )
         self.ejercicio.refresh_from_db()
         self.assertEqual(self.ejercicio.descripcion, 'Press de banca actualizado')
 
@@ -512,6 +572,10 @@ class EjercicioCrudViewTests(TestCase):
         )
         self.assertFalse(Ejercicio.objects.filter(pk='press').exists())
         ejercicio_nuevo = Ejercicio.objects.get(pk='press inclinado')
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {ejercicio_nuevo}'],
+        )
         self.assertEqual(ejercicio_nuevo.descripcion, 'Press de banca actualizado')
         ejercicio_rutina.refresh_from_db()
         self.assertEqual(ejercicio_rutina.ejercicio, ejercicio_nuevo)
@@ -605,7 +669,11 @@ class RutinaCrudViewTests(TestCase):
         )
 
         self.assertRedirects(response, reverse('rutina_list'))
-        self.assertTrue(Rutina.objects.filter(pk='rutina_nueva').exists())
+        rutina = Rutina.objects.get(pk='rutina_nueva')
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {rutina}'],
+        )
 
     def test_update_routine_redirects_to_detail(self):
         response = self.client.get(
@@ -665,6 +733,10 @@ class RutinaCrudViewTests(TestCase):
             reverse('rutina_detail', kwargs={'pk': 'rutina_modificada'}),
         )
         rutina_modificada = Rutina.objects.get(pk='rutina_modificada')
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {rutina_modificada}'],
+        )
         self.assertFalse(Rutina.objects.filter(pk='rutina_test').exists())
         self.assertEqual(
             EjercicioRutina.objects.get(pk=ejercicio_rutina.pk).rutina,
@@ -760,6 +832,10 @@ class RutinaCrudViewTests(TestCase):
         self.assertRedirects(
             response,
             reverse('rutina_detail', kwargs={'pk': self.rutina.pk}),
+        )
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {ejercicio_rutina}'],
         )
         series = list(
             SerieEjercicioRutina.objects.filter(

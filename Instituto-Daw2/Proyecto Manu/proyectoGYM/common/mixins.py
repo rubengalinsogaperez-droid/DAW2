@@ -21,6 +21,22 @@ class CreateUpdateContextMixin:
         })
         return context
 
+#UD4.4.a
+class CreateUpdateSuccessMessageMixin:
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.add_success_message()
+        return response
+
+    def add_success_message(self, obj=None):
+        if obj is None:
+            obj = self.object
+        messages.success(
+            self.request,
+            f'Se ha guardado correctamente: {obj}',
+        )
+
+
 #UD4.2.i
 
 class OrderingListViewMixin:
@@ -44,25 +60,13 @@ class OrderingListViewMixin:
 
 #UD4.2.h MIXIN DE VALIDACION
 class UsuarioMetricValidationMixin:
-    def form_valid(self, form):
-        altura = form.cleaned_data.get('altura')
-        peso = form.cleaned_data.get('peso')
-
-        if altura is not None and altura <= 0:
-            form.add_error('altura', 'La altura debe ser mayor que 0 metros.')
-        if peso is not None and peso <= 0:
-            form.add_error('peso', 'El peso debe ser mayor que 0 kg.')
-
-        if form.errors:
+    def form_invalid(self, form):
+        if 'altura' in form.errors or 'peso' in form.errors:
             messages.error(
                 self.request,
                 'No se ha podido guardar el usuario. Corrige los campos marcados.',
             )
-            return self.form_invalid(form)
-
-        response = super().form_valid(form)
-        messages.success(self.request, 'Usuario guardado correctamente.')
-        return response
+        return super().form_invalid(form)
 
 
 #UD4.2.f

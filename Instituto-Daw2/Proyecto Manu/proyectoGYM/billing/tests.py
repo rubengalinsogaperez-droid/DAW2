@@ -3,6 +3,10 @@ from django.urls import reverse
 from .models import Cliente, Cobro, Factura
 
 
+def response_message_texts(response):
+    return [str(message) for message in response.wsgi_request._messages]
+
+
 class ClienteCreateViewTests(TestCase):
     def test_create_cliente(self):
         url = reverse('cliente_create')
@@ -22,6 +26,10 @@ class ClienteCreateViewTests(TestCase):
         self.assertRedirects(
             response,
             reverse('cliente_update', kwargs={'pk': cliente.pk}),
+        )
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {cliente}'],
         )
 
     def test_update_cliente(self):
@@ -50,6 +58,10 @@ class ClienteCreateViewTests(TestCase):
         )
         cliente.refresh_from_db()
         self.assertEqual(cliente.apellidos, 'Byron')
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {cliente}'],
+        )
 
     def test_delete_cliente(self):
         cliente = Cliente.objects.create(
@@ -148,6 +160,25 @@ class FacturaViewTests(TestCase):
             email='ada.factura.test@example.com',
         )
 
+    def test_create_factura_requires_positive_total(self):
+        for total in ('0.00', '-1.00'):
+            with self.subTest(total=total):
+                numero = f'FAC-NONPOS-{total}'
+                response = self.client.post(reverse('factura_create'), {
+                    'cliente': self.cliente.pk,
+                    'numero': numero,
+                    'concepto': 'Cuota mensual',
+                    'fecha': '2026-01-15',
+                    'total': total,
+                })
+
+                self.assertEqual(response.status_code, 200)
+                self.assertIn(
+                    'El importe de la factura debe ser mayor que 0.',
+                    response.context['form'].errors['total'],
+                )
+                self.assertFalse(Factura.objects.filter(numero=numero).exists())
+
     def test_create_factura(self):
         url = reverse('factura_create')
         response = self.client.get(url)
@@ -167,6 +198,10 @@ class FacturaViewTests(TestCase):
         self.assertRedirects(
             response,
             reverse('factura_update', kwargs={'pk': factura.pk}),
+        )
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {factura}'],
         )
 
     def test_update_factura(self):
@@ -194,6 +229,10 @@ class FacturaViewTests(TestCase):
         self.assertRedirects(response, url)
         factura.refresh_from_db()
         self.assertEqual(factura.concepto, 'Cuota anual')
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {factura}'],
+        )
 
     def test_delete_factura(self):
         factura = Factura.objects.create(
@@ -248,6 +287,27 @@ class CobroViewTests(TestCase):
             total='50.00',
         )
 
+    def test_create_cobro_requires_positive_amount(self):
+        for importe in ('0.00', '-1.00'):
+            with self.subTest(importe=importe):
+                response = self.client.post(reverse('cobro_create'), {
+                    'factura': self.factura.pk,
+                    'fecha': '2026-01-15',
+                    'importe': importe,
+                })
+
+                self.assertEqual(response.status_code, 200)
+                self.assertIn(
+                    'El importe del cobro debe ser mayor que 0.',
+                    response.context['form'].errors['importe'],
+                )
+                self.assertFalse(
+                    Cobro.objects.filter(
+                        factura=self.factura,
+                        importe=importe,
+                    ).exists()
+                )
+
     def test_create_cobro(self):
         url = reverse('cobro_create')
         response = self.client.get(url)
@@ -265,6 +325,10 @@ class CobroViewTests(TestCase):
         self.assertRedirects(
             response,
             reverse('cobro_update', kwargs={'pk': cobro.pk}),
+        )
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {cobro}'],
         )
 
     def test_create_cobro_cannot_exceed_invoice_total(self):
@@ -322,6 +386,10 @@ class CobroViewTests(TestCase):
         self.assertRedirects(response, url)
         cobro.refresh_from_db()
         self.assertEqual(cobro.importe, 30)
+        self.assertEqual(
+            response_message_texts(response),
+            [f'Se ha guardado correctamente: {cobro}'],
+        )
 
     def test_delete_cobro(self):
         cobro = Cobro.objects.create(factura=self.factura, importe='25.00')

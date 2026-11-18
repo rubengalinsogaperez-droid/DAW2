@@ -20,6 +20,9 @@ class Usuario(models.Model):
         #UD3.4.f
         
 
+    def __str__(self):
+        return self.nickname
+
     
 class Ejercicio(models.Model):
     nombre = models.CharField(max_length=25, primary_key=True)

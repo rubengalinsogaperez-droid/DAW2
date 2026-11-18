@@ -10,9 +10,12 @@ from django.db import transaction
 from django.urls import reverse_lazy, reverse
 #para el paginado
 from .forms import (
+    EjercicioForm,
     EntrenamientoForm,
     EjercicioRutinaFormSet,
+    RutinaForm,
     SerieEjercicioRutinaFormSet,
+    UsuarioForm,
 )
 from .models import (
     EjercicioRutina,
@@ -25,6 +28,7 @@ from .models import (
 )
 from common.mixins import (
     CreateUpdateContextMixin,
+    CreateUpdateSuccessMessageMixin,
     DeleteViewDependencyMixin,
     OrderingListViewMixin,
     UsuarioMetricValidationMixin,
@@ -37,7 +41,7 @@ from common.mixins import (
 
 
 
-
+#UD4.3.a ahora cada create update referencia al form form_class = el que sea
 
 class UsuarioListView(OrderingListViewMixin, ListView):
     model = Usuario
@@ -56,10 +60,14 @@ class EjercicioListView(OrderingListViewMixin, ListView):
     paginate_by = 10
 
 
-class EjercicioCreateView(CreateUpdateContextMixin, CreateView):
+class EjercicioCreateView(
+    CreateUpdateSuccessMessageMixin,
+    CreateUpdateContextMixin,
+    CreateView,
+):
     model = Ejercicio
+    form_class = EjercicioForm
     template_name = "base_create_update.html"
-    fields = ['nombre', 'imagen', 'descripcion', 'mayor_peso', 'objetivo']
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = 'Crear ejercicio'
     titulo_actualizacion = None
@@ -71,10 +79,14 @@ class EjercicioCreateView(CreateUpdateContextMixin, CreateView):
     success_url = reverse_lazy('ejercicio_list')
 
 
-class EjercicioUpdateView(CreateUpdateContextMixin, UpdateView):
+class EjercicioUpdateView(
+    CreateUpdateSuccessMessageMixin,
+    CreateUpdateContextMixin,
+    UpdateView,
+):
     model = Ejercicio
+    form_class = EjercicioForm
     template_name = "base_create_update.html"
-    fields = ['nombre', 'imagen', 'descripcion', 'mayor_peso', 'objetivo']
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = None
     titulo_actualizacion = 'Actualizar ejercicio'
@@ -99,6 +111,7 @@ class EjercicioUpdateView(CreateUpdateContextMixin, UpdateView):
             Ejercicio.objects.filter(pk=nombre_anterior).delete()
             self.object = ejercicio
 
+        self.add_success_message()
         return redirect(self.get_success_url())
 
     def get_success_url(self):
@@ -131,10 +144,14 @@ class RutinaListView(OrderingListViewMixin, ListView):
     paginate_by = 2
 
 
-class RutinaCreateView(CreateUpdateContextMixin, CreateView):
+class RutinaCreateView(
+    CreateUpdateSuccessMessageMixin,
+    CreateUpdateContextMixin,
+    CreateView,
+):
     model = Rutina
+    form_class = RutinaForm
     template_name = "base_create_update.html"
-    fields = ['nombre']
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = 'Crear rutina'
     titulo_actualizacion = None
@@ -146,10 +163,14 @@ class RutinaCreateView(CreateUpdateContextMixin, CreateView):
     success_url = reverse_lazy('rutina_list')
 
 
-class RutinaUpdateView(CreateUpdateContextMixin, UpdateView):
+class RutinaUpdateView(
+    CreateUpdateSuccessMessageMixin,
+    CreateUpdateContextMixin,
+    UpdateView,
+):
     model = Rutina
+    form_class = RutinaForm
     template_name = "base_create_update.html"
-    fields = ['nombre']
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = None
     titulo_actualizacion = 'Actualizar rutina'
@@ -226,6 +247,7 @@ class RutinaUpdateView(CreateUpdateContextMixin, UpdateView):
             # Aplica las altas, modificaciones y eliminaciones de ejercicios.
             ejercicio_formset.save()
 
+        self.add_success_message()
         # Vuelve al detalle de la rutina guardada.
         return redirect(self.get_success_url())
 
@@ -234,7 +256,7 @@ class RutinaUpdateView(CreateUpdateContextMixin, UpdateView):
         return reverse('rutina_detail', kwargs={'pk': self.object.pk})
 
 
-class RutinaSeriesUpdateView(View):
+class RutinaSeriesUpdateView(CreateUpdateSuccessMessageMixin, View):
     # Plantilla donde se muestran y editan las series.
     template_name = 'rutina_series_form.html'
 
@@ -282,6 +304,7 @@ class RutinaSeriesUpdateView(View):
             # Guarda todas las series juntas; si algo falla, se revierten los cambios.
             with transaction.atomic():
                 formset.save()
+            self.add_success_message(ejercicio_rutina)
             # Después de guardar, vuelve al detalle de la rutina.
             return redirect('rutina_detail', pk=ejercicio_rutina.rutina_id)
         # Si hay errores, vuelve a mostrar el formulario con los datos y avisos.
@@ -320,7 +343,7 @@ class EntrenamientoListView(OrderingListViewMixin, ListView):
     queryset = Entrenamiento.objects.select_related("usuario", "rutina")
 
 
-class EntrenamientoCreateView(CreateView):
+class EntrenamientoCreateView(CreateUpdateSuccessMessageMixin, CreateView):
     model = Entrenamiento
     form_class = EntrenamientoForm
     template_name = "base_create_update.html"
@@ -353,19 +376,14 @@ def entrenamiento_detail(request, pk):
 #UD4.2.a Inicio
 class UsuarioCreateView(
     #UD4.2.h MIXIN PRIMERAVALIDACION
+    CreateUpdateSuccessMessageMixin,
     UsuarioMetricValidationMixin,
     CreateUpdateContextMixin,
     CreateView,
 ):
     model = Usuario
+    form_class = UsuarioForm
     template_name = "base_create_update.html"
-    fields = [
-        'nickname',
-        'foto_perfil',
-        'altura',
-        'peso',
-        'objetivo',
-    ]
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = 'Crear usuario'
     titulo_actualizacion = None
@@ -380,19 +398,14 @@ class UsuarioCreateView(
 
 class UsuarioUpdateView(
     #UD4.2.h MIXIN SEGUNDAVALIDACION
+    CreateUpdateSuccessMessageMixin,
     UsuarioMetricValidationMixin,
     CreateUpdateContextMixin,
     UpdateView,
 ):
     model = Usuario
+    form_class = UsuarioForm
     template_name = "base_create_update.html"
-    fields = [
-        'nickname',
-        'foto_perfil',
-        'altura',
-        'peso',
-        'objetivo',
-    ]
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = None
     titulo_actualizacion = 'Actualizar usuario'

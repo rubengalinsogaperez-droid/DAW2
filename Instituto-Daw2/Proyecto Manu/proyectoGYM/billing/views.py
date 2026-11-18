@@ -3,13 +3,17 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy, reverse
 #reverse para que los que necesitan id o pk como cliente update
 #para el paginado
+
+#Todos los mixins centralizados aqui 
 from common.mixins import (
     CreateUpdateContextMixin,
+    CreateUpdateSuccessMessageMixin,
     DeleteViewDependencyMixin,
     OrderingListViewMixin,
 )
 from billing.mixins import CobroMixin
 from billing.models import Cliente, Factura, Cobro
+from billing.forms import ClienteForm, CobroForm, FacturaForm
 
 
 
@@ -47,11 +51,15 @@ class CobroDetailView(DetailView):
 
 
 #UD4.2.a Inicio
-
-class ClienteCreateView(CreateUpdateContextMixin, CreateView):
+#Conectamos los mixins pertinentes a las vistas 
+class ClienteCreateView(
+    CreateUpdateSuccessMessageMixin,
+    CreateUpdateContextMixin,
+    CreateView,
+):
     model = Cliente
+    form_class = ClienteForm
     template_name = 'base_create_update.html'
-    fields = ['nombre', 'apellidos', 'nif', 'email']
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = 'Crear cliente'
     titulo_actualizacion = None
@@ -66,10 +74,14 @@ class ClienteCreateView(CreateUpdateContextMixin, CreateView):
         return reverse('cliente_update', kwargs={'pk': self.object.pk})
 
 
-class ClienteUpdateView(CreateUpdateContextMixin, UpdateView):
+class ClienteUpdateView(
+    CreateUpdateSuccessMessageMixin,
+    CreateUpdateContextMixin,
+    UpdateView,
+):
     model = Cliente
+    form_class = ClienteForm
     template_name = 'base_create_update.html'
-    fields = ['nombre', 'apellidos', 'nif', 'email']
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = None
     titulo_actualizacion = 'Actualizar cliente'
@@ -96,10 +108,14 @@ class ClienteDeleteView(DeleteViewDependencyMixin, DeleteView):
         ),
     }
 
-class FacturaCreateView(CreateUpdateContextMixin, CreateView):
+class FacturaCreateView(
+    CreateUpdateSuccessMessageMixin,
+    CreateUpdateContextMixin,
+    CreateView,
+):
     model = Factura
+    form_class = FacturaForm
     template_name = 'base_create_update.html'
-    fields = ['cliente', 'numero', 'concepto', 'fecha', 'total']
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = 'Crear factura'
     titulo_actualizacion = None
@@ -113,10 +129,14 @@ class FacturaCreateView(CreateUpdateContextMixin, CreateView):
         return reverse('factura_update', kwargs={'pk': self.object.pk})
 
 
-class FacturaUpdateView(CreateUpdateContextMixin, UpdateView):
+class FacturaUpdateView(
+    CreateUpdateSuccessMessageMixin,
+    CreateUpdateContextMixin,
+    UpdateView,
+):
     model = Factura
+    form_class = FacturaForm
     template_name = 'base_create_update.html'
-    fields = ['cliente', 'numero', 'concepto', 'fecha', 'total']
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = None
     titulo_actualizacion = 'Actualizar factura'
@@ -145,10 +165,15 @@ class FacturaDeleteView(DeleteViewDependencyMixin, DeleteView):
         ),
     }
 
-class CobroCreateView(CobroMixin, CreateUpdateContextMixin, CreateView):
+class CobroCreateView(
+    CreateUpdateSuccessMessageMixin,
+    CobroMixin,
+    CreateUpdateContextMixin,
+    CreateView,
+):
     model = Cobro
+    form_class = CobroForm
     template_name = 'base_create_update.html'
-    fields = ['factura', 'fecha', 'importe']
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = 'Crear cobro'
     titulo_actualizacion = None
@@ -162,10 +187,15 @@ class CobroCreateView(CobroMixin, CreateUpdateContextMixin, CreateView):
         return reverse('cobro_update', kwargs={'pk': self.object.pk})
 
 
-class CobroUpdateView(CobroMixin, CreateUpdateContextMixin, UpdateView):
+class CobroUpdateView(
+    CreateUpdateSuccessMessageMixin,
+    CobroMixin,
+    CreateUpdateContextMixin,
+    UpdateView,
+):
     model = Cobro
+    form_class = CobroForm
     template_name = 'base_create_update.html'
-    fields = ['factura', 'fecha', 'importe']
     # UD4.2.c / UD4.2.d: El mixin añade estos atributos al contexto.
     titulo_creacion = None
     titulo_actualizacion = 'Actualizar cobro'

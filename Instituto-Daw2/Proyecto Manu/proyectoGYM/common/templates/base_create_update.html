@@ -1,12 +1,13 @@
 {% extends "base_intranet.html" %}
-
+{% load crispy_forms_tags %}
+<!--UD.4.4.b-->
 {% block main_content %}
 <div class="container">
     <!-- UD4.2.c: El título y la URL de borrado se reciben desde la vista. -->
     <h2>{% if object %}{{ titulo_actualizacion }}{% else %}{{ titulo_creacion }}{% endif %}</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form|crispy }}
         {% if ejercicio_formset %}
             <h3>Ejercicios de la rutina</h3>
             {{ ejercicio_formset.management_form }}
@@ -14,7 +15,7 @@
             {% for ejercicio_form in ejercicio_formset %}
                 <div class="card card-body mb-3">
                     <h4>Ejercicio {{ forloop.counter }}</h4>
-                    {{ ejercicio_form.as_p }}
+                    {{ ejercicio_form|crispy }}
                     {% if ejercicio_form.instance.pk %}
                         <a href="{% url 'rutina_series_update' pk=object.pk ejercicio_rutina_pk=ejercicio_form.instance.pk %}" class="btn btn-outline-primary align-self-start">
                             Editar repeticiones y peso
