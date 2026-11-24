@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jornadas de Tecnología web</title>
+  <meta name="descripción" content="Jornadas de tecnología web para aprender, compartir y practicarº1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="inicio" class="encabezado">
+    <h1>Jornadas de tecnología Web</h1>
+    <h2>Aprende, comparte y desarrolla tus ideas.</h2>
+  </div>
+  <ul>
+    <li>Información</li>
+    <li>Inscripción</li>
+  </ul>
+  <div class="informacion">
+    <h1>Información</h1>
+    <p>Una jornada para conocer y practicar las bases</p>
+    <p>de la creación de paginas web.</p>
+  </div>
+  <ul class="requisitos">
+    <li>Traer un <b style="background-color: #fff2cc;">odenador pórtatil.</b></li>
+    <li>Comprobar el acceso al correo electrónico.</li>
+    <li>Acudir diz minutos antes del comienzo</li>
+  </ul>
+  <h3 class="aviso">Inscripción gratuita hasta completar el aforo</h3>
+
+
+  <div class="inscripcion">
+    <h1>Inscripción básica</h1>
+    <form>
+      <label for="nombre">Nombre completo:</label>
+      
+      <input type="text" id="nombre" name="nombre" maxlength="60" required>
+      <br>
+      <br>
+      <label for="correo">Correo electrónico:</label>
+      <input type="email" id="correo" name="correo" required>
+  </div>
+  <br>
+  <fieldset>
+    <legend> <label>Modalidad</label></legend>
+    <label for="presencial">
+      <input type="radio" name="modalidad" id="presencial" value="Presencial" checked> Presencial
+    </label>
+    <label for="online">
+      <input type="radio" name="modalidad" id="online" value="Online"> Online
+    </label>
+  </fieldset>
+  <br>
+
+
+
+
+  <label for="taller">Taller</label>
+  <select name="taller" id="taller">
+    <option value="html-semantico" selected>HTML semántico</option>
+    <option value="formularios-web">Formularios web</option>
+    <option value="css-inicial">CSS inicial</option>
+  </select>
+
+  <label for="observaciones"><p>Observaciones</p></label>
+  <textarea type="textarea" name="observaciones" id="observaciones"></textarea>
+  <br>
+  <br>
+  
+  <input type="checkbox" name="condiciones" id="condiciones" value="si">
+  <label for="condiciones">He leido las condiciones de inscripción</label>
+  <br>
+  <br>
+  <input type="submit" name="enviar" id="enviar" value="Enviar inscripción">
+  <input type="reset" name="restablecer" id="restablecer" value="Restablecer">
+  </form>
+  <p></p>
+  <p></p>
+
+  <footer>
+    <p>IES Severo Ochoa</p>
+    <a href="#inicio">Volver al inicio</a>
+  </footer>
+</body>
+</html>

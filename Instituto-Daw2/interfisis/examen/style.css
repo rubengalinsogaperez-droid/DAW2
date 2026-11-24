@@ -1,0 +1,47 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+
+.encabezado {
+  background-color: #17324d;
+  color: white;
+  padding: 15px;
+}
+
+footer {
+  background-color: #17324d;
+  color: white;
+  padding: 15px;
+}
+
+.encabezado h1 {
+  text-align: center;
+  font-size: 48px;
+}
+
+.encabezado h2 {
+  text-align: left;
+}
+
+.informacion p,label,select {
+  font-size: 20px;
+}
+
+.requisitos li {
+  list-style-type: square;
+  font-size: 24px;
+}
+
+.aviso {
+  background-color: #fff2cc;
+}
+
+input[type="submit"],input[type="reset"] {
+  font-size: 15px;
+}
+
+footer {
+  text-align: left;
+  font-size: 12px;
+}

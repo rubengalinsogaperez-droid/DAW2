@@ -5,6 +5,8 @@ from django.db.models import Sum
 from .models import Cobro
 
 #UD4.2.g
+
+#mixin de error por factura si importe supera factura
 class CobroMixin:
     def form_valid(self, form):
         factura = form.cleaned_data['factura']
@@ -17,6 +19,7 @@ class CobroMixin:
         importe_acumulado = (
             cobros.aggregate(total=Sum('importe'))['total'] or Decimal('0.00')
         )
+        
         if importe_acumulado + importe > factura.total:
             form.add_error(
                 'importe',

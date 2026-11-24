@@ -4,7 +4,9 @@ from crispy_forms.layout import Column, Layout, Row
 
 from .models import Cliente, Cobro, Factura
 
-# UD4.4.d Organizar por columnas sirve para que los formularios de billing se vean organizados en columnas en la página, tiene relación con Boostrap que divide cada fila en 12 columnas
+# UD4.4.d Organizar por columnas sirve para que los formularios de billing
+# se vean organizados en columnas en la página,
+# tiene relación con Boostrap que divide cada fila en 12 columnas
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente

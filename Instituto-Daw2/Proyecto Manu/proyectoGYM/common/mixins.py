@@ -40,6 +40,8 @@ class CreateUpdateSuccessMessageMixin:
 #UD4.2.i
 
 class OrderingListViewMixin:
+
+    #Este es el metodo getqueryset.. aqui tengo que cabiar cosas e implementar ordering.
     def get_queryset(self):
         queryset = super().get_queryset()
         ordering = self.request.GET.get('ordering')
@@ -78,14 +80,15 @@ class DeleteViewDependencyMixin:
             getattr(self.object, relation).exists()
             for relation in self.dependency_relations
         )
+        #si tiene dependencias mostramos error
         if has_dependencies:
             return self.show_dependency_error()
-
+        #si no lo damos por valido a no ser que de error por dependencias entonces mostramos mensaje de error
         try:
             return super().form_valid(form)
         except ProtectedError:
             return self.show_dependency_error()
-
+    #el mensaje de error..
     def show_dependency_error(self):
         messages.error(
             self.request,
