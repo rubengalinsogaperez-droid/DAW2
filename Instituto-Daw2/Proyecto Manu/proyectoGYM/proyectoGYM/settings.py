@@ -39,9 +39,16 @@ INSTALLED_APPS = [
     'common',
     'core',
     'billing',
+    #UD5.1.a
+    'usuarios',
     
     
 ]
+#UD5.1.b  
+# le indica a Django que use el modelo
+# MyUser como modelo de usuario del 
+# proyecto en vez de user que trae django
+AUTH_USER_MODEL = 'usuarios.MyUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
