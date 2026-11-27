@@ -49,6 +49,11 @@ INSTALLED_APPS = [
 # MyUser como modelo de usuario del 
 # proyecto en vez de user que trae django
 AUTH_USER_MODEL = 'usuarios.MyUser'
+#5.2.a
+LOGIN_URL = "usuarios:login"
+LOGIN_REDIRECT_URL = "panel"
+LOGOUT_REDIRECT_URL = "usuarios:login"
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
