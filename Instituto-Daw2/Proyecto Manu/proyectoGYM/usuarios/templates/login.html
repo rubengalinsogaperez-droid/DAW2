@@ -1,0 +1,9 @@
+<h1>Iniciar sesión</h1>
+<form method="post">
+    <!-- toquen de seguridad de django, comprueba al recibir post -->
+    {% csrf_token %}
+    <!-- Estoy usando lo que configure en urls.py auth_views.LoginView.as_view... 
+    lo trae django por defecto y sirve para mostrar el formulario sin que tenga que ponerlo yo a mano -->
+    {{ form.as_p }}
+    <button type="submit">Entrar</button>
+</form>

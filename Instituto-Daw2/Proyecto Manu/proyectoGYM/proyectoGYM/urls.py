@@ -13,6 +13,9 @@ urlpatterns = [
     # Cada aplicación define sus rutas; aquí se conectan con el proyecto.
     path("core/", include("core.urls")),
     path("", include("billing.urls")),
+    #Ruta para usuarios la cual esta referenciada a urls de usuarios
+    path("usuarios/", include("usuarios.urls")),
+        
 ]
 
 if settings.DEBUG:
