@@ -1,6 +1,8 @@
 services:
   web:
-    build: ./nginx
+    build:
+      context: ./nginx
+      dockerfile: DOCKERFILE
     ports: ["8080:80"]
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
